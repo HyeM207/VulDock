@@ -191,7 +191,7 @@ def check_vul9() : #Check Vul 2-7
 
 
 def check_vul10() : #Check Vul 2-8
-    title = ''
+    title = 'Check /etc/services file permissions adequacy'# /etc/services 파일 권한 적절성 점검
     cmd1 = container.exec_run('ls -l /etc/services')
     if('No such file or directory' in cmd1.output) :
         return [title, 'Check Later...']  
@@ -206,7 +206,7 @@ def check_vul10() : #Check Vul 2-8
 
 
 def check_vul11() : #Check Vul 2-9
-    title = ''
+    title = 'Check for SUID, SGID settings for unnecessary or malicious files' #불필요하거나 악의적인 파일에 SUID, SGID 설정 여부 점검
     cnt_unsafe = 0 
     cnt_safe = 0 
     no_exist=[]   
@@ -306,7 +306,7 @@ def check_vul13() : #Check Vul 2-11
 
 
 def check_vul14(): #Check Vul 3-2
-    title = ''
+    title = 'Check anonymous FTP access allowed' #익명 FTP 접속 허용 여부 점검
     cmd1 = container.exec_run("grep 'ftp' /etc/passwd")
     if (cmd1.output == ''):
         return [title, 'Safe' ] # Safe
@@ -315,7 +315,7 @@ def check_vul14(): #Check Vul 3-2
 
 
 def check_vul15(): #Check Vul 3-4
-    title = ''
+    title = 'Check permission adequacy of Cron-related files' # Cron  관련 파일의 권한 적절성 점검
     file_list = ['cron.allow', 'cron.deny']
     for f in file_list:
         cmd1 = container.exec_run('ls -al /etc/%s' %(f))
@@ -395,6 +395,7 @@ def check_vul17(): #Check Vul 3-11
 
 
 def check_vul18(): #Check Vul 3-12
+    title = 'Check vulnerable version of Sendmail service availability' #취약한 버전의 Sendmail 서비스 이용 여부 점검
     print('==== Check Vul 3-12 ====')
     proc1 = subprocess.Popen(['ps', '-ef'], stdout=subprocess.PIPE)
     proc2 = subprocess.Popen(['grep', 'sendmail'], stdin=proc1.stdout, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -414,10 +415,10 @@ def check_vul18(): #Check Vul 3-12
             list.append(i)
 
     if (len(list) > 0):
-        print('using SMTP(Checking your Version)')
+        pass #print('using SMTP(Checking your Version)')
 
     else :    
-        print('Vul3-12 is Safe(not using sendmail Service)')
+        return [title, 'Safe' ] # 'Vul3-12 is Safe(not using sendmail Service)'
     url = 'https://www.proofpoint.com/us/products/email-protection/open-source-email-solution'
     response = requests.get(url)
     if response.status_code == 200 :
@@ -426,13 +427,14 @@ def check_vul18(): #Check Vul 3-12
         target = soup.find('div', {'class':'block-text-cols__body list-in-article'})
         td = target.find_all('p')
         p = str(td[0]).split('</a>')[0]
-        print('Your Verson : ' + out2)
-        print('**Recommended Latest Version**')
-        print(p[3:].split('<')[0] + p[3:].split('>')[1])    
+        #print('Your Verson : ' + out2)
+        #print('**Recommended Latest Version**')
+        #print(p[3:].split('<')[0] + p[3:].split('>')[1])
+        return [title, 'Recommend Version : ' + p[3:].split('<')[0] + p[3:].split('>')[1]]     
 
 
 def check_vul19(): #Check Vul 3-13
-    title = ''
+    title = 'Check for relay limitations on SMTP servers' #SMTP 서버의 릴레이 기능 제한 여부 점검
     print('==== Check Vul 3-13 ====')
     proc1 = subprocess.Popen(['ps', '-ef'], stdout=subprocess.PIPE)
     proc2 = subprocess.Popen(['grep', 'sendmail'], stdin=proc1.stdout, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -458,12 +460,11 @@ def check_vul20(): #Check Vul 3-15
     print('==== Check Vul 3-15 ====')
     cmd1 = container.exec_run('named -V')
     if (cmd1.output == '' or 'not found' in cmd1.output):
-        print('Vul3-15 is Safe( NO BIND )')
+        return [title, 'Safe' ] #print('Vul3-15 is Safe( NO BIND )')
     else :
         version = cmd1.output.split('\n')[0]
-        print('YOUR BIND VERSION : ' + version.split('-')[0].split(' ')[1])
-        print('[*] ' + cmd1.output.split('\n')[0] + '\n')
-    print('REcommended Latest Version')
+        #print('YOUR BIND VERSION : ' + version.split('-')[0].split(' ')[1])
+        #print('[*] ' + cmd1.output.split('\n')[0] + '\n')
     url = 'https://www.isc.org/download/'
     response = requests.get(url)
     if response.status_code == 200 :
@@ -471,10 +472,12 @@ def check_vul20(): #Check Vul 3-15
         soup = BeautifulSoup(html, 'html.parser')
         target = soup.find('table', {'class':'table table-download table-borderless rounded text-left mb-5'})
         td = target.find_all('td')
-        print('[ VERSION ]   [ RELEASE DATE ]   [ STATUS ]')
-        print('  ' + td[0].text + '        ' + td[3].text + '       ' + td[1]['title'])
-        print('  ' + td[6].text + '        ' + td[9].text + '       ' + td[7]['title'])
-        print('  ' + td[12].text + '        ' + td[15].text + '       ' + td[13]['title'])
+        #print('[ VERSION ]   [ RELEASE DATE ]   [ STATUS ]')
+        #print('  ' + td[0].text + '        ' + td[3].text + '       ' + td[1]['title'])
+        #print('  ' + td[6].text + '        ' + td[9].text + '       ' + td[7]['title'])
+        #print('  ' + td[12].text + '        ' + td[15].text + '       ' + td[13]['title'])
+
+        return [title, 'Recommend Version : ' + td[0].text, ] 
 
 
 def check_vul21(): #Check Vul 3-17
