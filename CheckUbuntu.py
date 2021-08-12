@@ -207,6 +207,8 @@ def check_vul10() : #Check Vul 2-8
 
 def check_vul11() : #Check Vul 2-9
     title = ''
+    cnt_unsafe = 0 
+    cnt_safe = 0 
     no_exist=[]   
     SUID_list = []
     UID_list = []
@@ -224,19 +226,26 @@ def check_vul11() : #Check Vul 2-9
             else :
                 UID_list.append(i)
 
-    print('\n')
-    print('[-] this file has SUID/SGID(NOT SAFE)\n')
+    # print('\n')
+    # print('[-] this file has SUID/SGID(NOT SAFE)\n')
     for i in SUID_list :
-        print(' -' + i + '\n')
-    print('\n')
-    print("[+] this file hasn't SUID/SGID(SAFE)\n")
+        # print(' -' + i + '\n')
+        cnt_unsafe += 1
+    # print('\n')
+    # print("[+] this file hasn't SUID/SGID(SAFE)\n")
     for i in UID_list :
-        print(' -' + i + '\n')
-    print('\n')
-    print('[*] this file is not existed\n')
-    for i in no_exist :
-        print(' -' + i + '\n')
-    print('\n')
+        # print(' -' + i + '\n')
+        cnt_safe += 1
+    # print('\n')
+    # print('[*] this file is not existed\n')
+    # for i in no_exist :
+    #     print(' -' + i + '\n')
+    # print('\n')
+
+    if cnt_unsafe == 0:
+        return [title, 'Safe' ] # Safe
+    else :
+        return [title, 'Vulnerable (Unsafe file num : %d)' %(cnt_unsafe) ] # Vulnerable
     
 
 def check_vul12() : #Check Vul 2-12
@@ -297,14 +306,16 @@ def check_vul13() : #Check Vul 2-11
 
 
 def check_vul14(): #Check Vul 3-2
+    title = ''
     cmd1 = container.exec_run("grep 'ftp' /etc/passwd")
     if (cmd1.output == ''):
-        print('Vul3-2 is Safe')
+        return [title, 'Safe' ] # Safe
     else :
-        print('Vul3-2 is Not Safe')
+        return [title, 'Vulnerable' ] #Vulnerable
 
 
 def check_vul15(): #Check Vul 3-4
+    title = ''
     file_list = ['cron.allow', 'cron.deny']
     for f in file_list:
         cmd1 = container.exec_run('ls -al /etc/%s' %(f))
@@ -318,9 +329,9 @@ def check_vul15(): #Check Vul 3-4
             group = changeToDigit(group)
             etc = changeToDigit(etc)
             if(cmd1.output.split(' ')[2] == 'root' and owner <= 6 and group <=4 and owner <= 0) :
-                print('Vul3-4 is safe')
+                return [title, 'Safe' ] # Safe
             else :
-                print('Vul3-4 is not safe')
+                return [title, 'Vulnerable' ] #Vulnerable
 
 
 def check_vul16(): #Check Vul 3-5 & 3-9
@@ -421,6 +432,7 @@ def check_vul18(): #Check Vul 3-12
 
 
 def check_vul19(): #Check Vul 3-13
+    title = ''
     print('==== Check Vul 3-13 ====')
     proc1 = subprocess.Popen(['ps', '-ef'], stdout=subprocess.PIPE)
     proc2 = subprocess.Popen(['grep', 'sendmail'], stdin=proc1.stdout, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -436,12 +448,13 @@ def check_vul19(): #Check Vul 3-13
         #print('using SMTP')
         cmd1 = container.exec_run("grep '550 Relaying denied' /etc/mail/sendmail.cf").output.split('\n')[0]
         if(cmd1[0] == '#') :
-            print('Vul3-13 is no Safe')
+            return [title, 'Vulnerable' ] #Vulnerable
         else :
-            print('Vul3-13 is Safe')
+            return [title, 'Safe' ] #Safe
 
 
 def check_vul20(): #Check Vul 3-15
+    title = 'Check for latest BIND version usage and periodic security patch security' # BIND 최신버전 사용 유무 및 주기적 보안 패치 보안 여부 점검
     print('==== Check Vul 3-15 ====')
     cmd1 = container.exec_run('named -V')
     if (cmd1.output == '' or 'not found' in cmd1.output):
@@ -465,13 +478,14 @@ def check_vul20(): #Check Vul 3-15
 
 
 def check_vul21(): #Check Vul 3-17
+    title = 'Check for activation of Apache Directory Search feature' #Apache 디렉토리 검색 기능의 활성화 여부 점검
     cmd1 = container.exec_run('cat /etc/apache2/apache2.conf')
     cmd2 = container.exec_run('cat /etc/apache2/httpd.conf')
     check = True
 
     #if os is ubuntu
     if('No such file or directory' in cmd1.output and 'No such file or directory' in cmd2.output) :
-        print('[Vul 3-17] No File or Directory')
+        return [title, 'Safe' ] #Safe
     elif('No such file or directory' in cmd2.output):
         result = cmd1.output.split('\n')
 
@@ -481,10 +495,10 @@ def check_vul21(): #Check Vul 3-17
                 check = False
         
         if check == True:
-            print('Vul 3-17 is safe')
+            return [title, 'Safe' ] #Safe
         elif check == False:
-            print('Vul 3-17 is not safe')
-            print('You should remove 'Indexes' option in apache2.conf file')
+            return [title, 'Vulnerable' ] #Vulnerable
+            #print('You should remove "Indexes" option in apache2.conf file')
 
     #if os is not ubuntu
     elif('No such file or directory' in cmd1.output):
@@ -497,26 +511,27 @@ def check_vul21(): #Check Vul 3-17
 
         
         if check == True:
-            print('Vul 3-17 is safe')
+            return [title, 'Safe' ] #Safe
         elif check == False:
-            print('Vul 3-17 is not safe')
-            print("You should remove 'Indexes' option in apache2.conf file")
+            return [title, 'Vulnerable' ] #Vulnerable
+            #print("You should remove 'Indexes' option in apache2.conf file")
 
 
 def check_vul22(): #Check Vul 3-18
+    title = 'Check whether Apache daemon is running with root privileges' #Apache 데몬이 root 권한으로 구동되는지 여부 점검
     cmd1 = container.exec_run("grep 'export APACHE_RUN_USER' /etc/apache2/envvars") # ubuntu
     cmd2 = container.exec_run("grep 'export APACHE_RUN_GROUP' /etc/apache2/envvars") # ubuntu
     check = True
     
     #check APACHE_RUN_USER
     if('' == cmd1.output) :
-        print('[Vul 3-18] No File or Directory')
+        return [title, 'Safe' ] #'[Vul 3-18] No File or Directory'
     else : 
         privilege = cmd1.output.split('=')[1]
         if (privilege != 'root'):
-            print('Vul 3-18 (User) is safe')
+            return [title, 'Safe' ] #Vul 3-18 (User) is safe
         else : 
-            print('Vul 3-18 (User) is not safe')
+            return [title, 'Vulnerable' ] #Vul 3-18 (User) is not safe
 
     #check APACHE_RUN_USER
     if('' == cmd2.output) :
@@ -524,18 +539,20 @@ def check_vul22(): #Check Vul 3-18
     else : 
         privilege = cmd2.output.split('=')[1]
         if (privilege != 'root'):
-            print('Vul 3-18 (Group) is safe')
+            return [title, 'Safe' ] #Vul 3-18 (Group) is safe
         else : 
-            print('Vul 3-18 (Group) is not safe')
+            return [title, 'Vulnerable' ] #Vul 3-18 (Group) is not safe
     
 
 def check_vul23(): #Check Vul 3-19
+    title = 'Check whether the Apache parent path can be moved due to the use of characters' # 문자 사용으로 인한 Apache 상위 경로로 이동이 가능한지 여부 점검
     cmd1 = container.exec_run("grep 'AllowOverride' /etc/apache2/httpd.conf")
     cmd2 = container.exec_run("grep 'AllowOverride' /etc/apache2/apache2.conf")
     check = True
 
     if('No such file or directory' in cmd1.output and 'No such file or directory' in cmd2.output) :
-        print('[Vul 3-19] No File or Directory')
+        #print('[Vul 3-19] No File or Directory')
+        return [title, 'Safe' ] #Safe
     elif('No such file or directory' in cmd2.output):
         result = cmd1.output.split('\n')
 
@@ -546,10 +563,10 @@ def check_vul23(): #Check Vul 3-19
                 break
 
         if check == True:
-            print('Vul 3-19 is safe')
+            return [title, 'Safe' ] #Safe
         elif check == False:
-            print('Vul 3-19 is not safe')
-            print("You should Change 'None' Option to 'AutoConfig' in httpd.conf file")
+            return [title, 'Vulnerable' ] #Vulnerable
+            #print("You should Change 'None' Option to 'AutoConfig' in httpd.conf file")
 
     #if os is not ubuntu
     elif('No such file or directory' in cmd1.output):
@@ -562,20 +579,22 @@ def check_vul23(): #Check Vul 3-19
                 break
         
         if check == True:
-            print('Vul 3-19 is safe')
+            return [title, 'Safe' ] #Safe
         elif check == False:
-            print('Vul 3-19 is not safe')
-            print("You should Change 'None' Option to 'AutoConfig' in httpd.conf file")
+            return [title, 'Vulnerable' ] #Vulnerable
+            #print("You should Change 'None' Option to 'AutoConfig' in httpd.conf file")
 
 
 def check_vul24(): #Check Vul 3-21
+    title = 'Symbolic links, checking alias for restrictions on use' # 심볼릭 링크, aliases 사용 제한 여부 점검
     cmd1 = container.exec_run('cat /etc/apache2/apache2.conf')
     cmd2 = container.exec_run('cat /etc/apache2/httpd.conf')
     check = True
 
     #if os is ubuntu
     if('No such file or directory' in cmd1.output and 'No such file or directory' in cmd2.output) :
-        print('[Vul 3-21] No File or Directory')
+        #print('[Vul 3-21] No File or Directory')
+        return [title, 'Safe' ] #Safe
     elif('No such file or directory' in cmd2.output):
         result = cmd1.output.split('\n')
 
@@ -585,10 +604,10 @@ def check_vul24(): #Check Vul 3-21
                 check = False
         
         if check == True:
-            print('Vul 3-21 is safe')
+            return [title, 'Safe' ] #Safe
         elif check == False:
-            print('Vul 3-21 is not safe')
-            print("You should remove 'FollowSymLinks' option in apache2.conf file")
+            return [title, 'Vulnerable' ] #Vulnerable
+            #print("You should remove 'FollowSymLinks' option in apache2.conf file")
 
     #if os is not ubuntu
     elif('No such file or directory' in cmd1.output):
@@ -600,10 +619,10 @@ def check_vul24(): #Check Vul 3-21
                 check = False
         
         if check == True:
-            print('Vul 3-21 is safe')
+           return [title, 'Safe' ] #Safe
         elif check == False:
-            print('Vul 3-21 is not safe')
-            print("You should remove 'FollowSymLinks' option in apache2.conf file")
+            return [title, 'Vulnerable' ] #Vulnerable
+            #print("You should remove 'FollowSymLinks' option in apache2.conf file")
 
 
 def make_container(service, version):
