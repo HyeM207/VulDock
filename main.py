@@ -361,46 +361,36 @@ def find_exploit(services):
   
 
 if __name__ == "__main__":
-    opts, args = getopt.getopt(sys.argv[1:], 'hosnctl')
-    print(opts)
-    print(args)
-    # parser = argparse.ArgumentParser(description='Argparse Tutorial', prefix_chars='-')
-    # print(parser)
-    # parser.add_argument('-', 'option', type=str, default='none')
-    # parser.add_argument('image_name', type=str)
-    # args = parser.parse_args()
-    # option = args.option
-    # image_name = args.image_name
-    # print('option : %s' %(option))
-    # print('image_name : %s' %(image_name))
-    # dir_path = find_compose(image_name)
-    # dic_services=dict()  #save service dictionary
+    opts, args = getopt.getopt(sys.argv[1:], 'hosnctl', ['options'])
 
-    if len(agrs[0]) != 1:
+    if len(args) != 1:
         print("You Wrong")
 
-    if opts == []:
-        opts = [('-t', ''), ('-c', '')]
-    
-    for option, arg in opts:
-        if '-o' == option:
-            print("You enter option Check Official Image " + arg)
+    else:
+        if opts == []:
+            opts = [('-t', ''), ('-c', '')]
+
+        print(opts)
         
-        elif '-s' == option:
-            print("You enter option Check Service Version " + arg)
-        
-        elif '-n' == option:
-            print("You enter option Check num Exploit " + arg)
+        for option, arg in opts:
+            if '-o' == option:
+                print("You enter option Check Official Image " + arg)
+            
+            elif '-s' == option:
+                print("You enter option Check Service Version " + arg)
+            
+            elif '-n' == option:
+                print("You enter option Check num Exploit " + arg)
 
-        elif '-c' == option or '-t' == option or '-l' == option:
-            if '-t' == option:
-                print("You enter option Print Title " + arg)
+            elif '-c' == option or '-t' == option or '-l' == option:
+                if '-t' == option:
+                    print("You enter option Print Title " + arg)
 
-            elif '-c' == option:
-                print("You enter option Print CVE " + arg)
+                elif '-c' == option:
+                    print("You enter option Print CVE " + arg)
 
-            elif '-l' == option:
-                print("You enter option Print Link " + arg)
+                elif '-l' == option:
+                    print("You enter option Print Link " + arg)
     
 
     # if dir_path == False:
