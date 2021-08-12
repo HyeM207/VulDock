@@ -96,8 +96,7 @@ def check_vul3() : # Check Vul 2-1
 
 
 def check_vul4() : #Check Vul 2-2
-    title1 = ''
-    title2 = ''
+    title = ''
     is_safe1 = True
     is_safe2 = True
     cmd1 = container.exec_run('find / -nouser -print')
@@ -107,7 +106,7 @@ def check_vul4() : #Check Vul 2-2
         if (i != ''):
             if ('No such file or directory' not in i):
                 is_safe1 = False
-                break # return False 
+                break 
 
     for i in cmd2.output.split('\n'):
         if ( i != ''):
@@ -116,13 +115,9 @@ def check_vul4() : #Check Vul 2-2
                 break
 
     if (is_safe1 == True and is_safe2 == True) :
-        return [[title1,title2],['Safe','Safe']]
-    elif (is_safe1 == True and is_safe2 == False) :
-        return [[title1,title2],['Safe','Vulnerable']]
-    elif (is_safe1 == False and is_safe2 == True) :
-        return [[title1,title2],['Vulnerable','Safe']]
+        return [title, 'Safe']
     else : 
-        return [[title1,title2],['Vulnerable','Vulnerable']]
+        return [title, 'Vulnerable' ] 
 
 
 def check_vul5() : #Check Vul 2-3
