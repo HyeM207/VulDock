@@ -245,7 +245,12 @@ def check_vul11() : #Check Vul 2-9
     
 
 def check_vul12() : #Check Vul 2-12
+    title = ''
     env_list = ['.profile', '.kshrc', '.cshrc', '.bashrc', '.bash_profile', '.login', '.exrc', '.netrc']
+
+    cnt_safe = 0
+    cnt_unsafe = 0 
+    cnt_pass = 0
 
     for env in env_list:
         cmd1  = container.exec_run('printenv HOME')
@@ -257,16 +262,20 @@ def check_vul12() : #Check Vul 2-12
 
         #print(cmd2.output)
         if('No such file or directory' in cmd2.output) :
-            print('Vul2-12 ' + env + ' pass')
+            cnt_pass += 1
         else : 
             if (cmd2.output.split(' ')[2] == 'root' or cmd2.output.split(' ')[2] == cmd3.output) :
                 if ('w' not in group and 'w' not in etc ):
-                    print('Vul2-12 '+ env + ' is safe')
+                    cnt_safe += 1 
                 else: 
-                    print('Vul2-12 ' + env + ' is Not safe')
+                    cnt_unsafe += 1
             else: 
-                print('Vul2-12 ' + env + ' is Not safe')
+                cnt_unsafe += 1
 
+    if cnt_unsafe == 0:
+        return [title, 'Safe' ] # Safe
+    else :
+        return [title, 'Vulnerable (Unsafe file num : %d)' %(cnt_unsafe) ] # Vulnerable
 
 def check_vul13() : #Check Vul 2-11
     title = ''  
@@ -274,7 +283,7 @@ def check_vul13() : #Check Vul 2-11
     result=cmd1.output.split('\n')
     del result[-1]  #last yoso is gongbaek so i delete last inde
 
-    count=0  #the number of unsafe files
+    cnt_unsafe = 0  #the number of unsafe files
 
     for i in result:
         if 'No such file' in i:
@@ -284,9 +293,12 @@ def check_vul13() : #Check Vul 2-11
             group = i.split(' ')[0][4:7]
             etc = i.split(' ')[0][7:]
             if ('w' in etc) :
-                count += 1
+                cnt_unsafe += 1
     
-    print('You have %d unsafe files' %(count))
+    if cnt_unsafe == 0:
+        return [title, 'Safe' ] # Safe
+    else :
+        return [title, 'Vulnerable (Unsafe file num : %d)' %(cnt_unsafe) ] # Vulnerable 
 
 
 def check_vul14(): #Check Vul 3-2
@@ -317,13 +329,14 @@ def check_vul15(): #Check Vul 3-4
 
 
 def check_vul16(): #Check Vul 3-5 & 3-9
-    print('==== Check Vul 3-9 ====')
+    title = ''
     cmd1 = container.exec_run('ls /etc/xinetd.d')
     services = cmd1.output.split('\n')
     del services[-1]
-    count = 0  #the number of unsafe files
+    cnt_safe = 0  #the number of safe files
+    cnt_unsafe = 0
     if ('No such file' in cmd1.output):
-        print('No xinetd.d file')
+        return [title, 'Check Later...']  #  print('No xinetd.d file')
     else:
         for i in services:
             cmd2 = container.exec_run('cat /etc/xinetd.d/%s' %(i))
@@ -331,19 +344,23 @@ def check_vul16(): #Check Vul 3-5 & 3-9
             for j in result:
                 if 'disable' in j:
                     if 'yes' in j:
-                        count += 1
-                                              
+                        cnt_safe += 1         
                         break
-             
-        print('[Vul 3-9] You have %d unsafe files' %(len(services)-count))
+    
+        cnt_unsafe = len(services) - cnt_safe
+        if cnt_unsafe == 0:
+            return [title, 'Safe' ] # Safe
+        else :
+            return [title, 'Vulnerable (Unsafe file num : %d)' %(cnt_unsafe) ] # Vulnerable 
 
 
 def check_vul17(): #Check Vul 3-11
+    title = ''
     cmd1 = container.exec_run('ls /etc/xinetd.d')
     services = cmd1.output.split('\n')
     service_list = []
-    count = 0
-    no = 0
+    cnt_safe = 0
+    cnt_unsafe = 0
     if 'tftp' in services:
         service_list.append('tftp')
     if 'talk' in services:
@@ -352,7 +369,7 @@ def check_vul17(): #Check Vul 3-11
         service_list.append('ntalk')
 
     if len(service_list) == 0:
-        print('[Vul 3-11] No File')
+        return [title, 'Check Later...']  # print('[Vul 3-11] No File')
     else:
         for i in service_list:
             cmd2 = container.exec_run('cat /etc/xinetd.d/talks')
@@ -360,11 +377,15 @@ def check_vul17(): #Check Vul 3-11
             for j in result:
                 if 'disable' in j:
                     if 'yes' in j:
-                        count += 1
+                        cnt_safe += 1
                         break
         
+        cnt_unsafe = len(service_list) - cnt_safe
 
-        print('[Vul 3-11] You have %d unsafe files' %(len(service_list)-count))
+        if cnt_unsafe == 0:
+            return [title, 'Safe' ] # Safe
+        else :
+            return [title, 'Vulnerable (Unsafe file num : %d)' %(cnt_unsafe) ] # Vulnerable 
 
 
 def check_vul18(): #Check Vul 3-12
