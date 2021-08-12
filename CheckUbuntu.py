@@ -46,7 +46,7 @@ def checkVersion() : # Check Version of Linux
 
 
 def check_vul1() : # Check Vul 1-1
-    title = '' 
+    title = 'Check that the system policy applies the root account\'s remote terminal access blocking settings' 
     check1_1 = 0
     cmd1 = "grep 'pam_securetty.so' /etc/pam.d/login"
     res1 = container.exec_run(cmd1)
@@ -68,7 +68,7 @@ def check_vul1() : # Check Vul 1-1
 
 
 def check_vul2() : # Check Vul 1-4
-    title = ''  
+    title = 'Check that the user account password is encrypted and stored in /etc/password'  
     check = 0   
     lens = 0
     cmd1 = container.exec_run('cat /etc/passwd')
@@ -86,7 +86,7 @@ def check_vul2() : # Check Vul 1-4
 
 
 def check_vul3() : # Check Vul 2-1
-    title = ''
+    title = 'Check that the PATH environment variable in the root account contains \'.\''
     cmd1 = container.exec_run("bash -c 'echo $PATH'")
     
     if('.' in cmd1.output or '::' in cmd1.output) :
@@ -96,7 +96,7 @@ def check_vul3() : # Check Vul 2-1
 
 
 def check_vul4() : #Check Vul 2-2
-    title = ''
+    title = 'Check whether files or directories that are unclear to the owner exist'
     is_safe1 = True
     is_safe2 = True
     cmd1 = container.exec_run('find / -nouser -print')
@@ -121,7 +121,7 @@ def check_vul4() : #Check Vul 2-2
 
 
 def check_vul5() : #Check Vul 2-3
-    title = ''
+    title = 'Check /etc/passwd file permissions adequacy'
     cmd1 = container.exec_run('ls -l /etc/passwd')
     owner = cmd1.output.split(' ')[0][1:4]
     group = cmd1.output.split(' ')[0][4:7]
@@ -137,7 +137,7 @@ def check_vul5() : #Check Vul 2-3
 
 
 def check_vul6() : #Check Vul 2-4
-    title = ''
+    title = 'Check /etc/shadow file permissions adequacy'
     cmd1 = container.exec_run('ls -l /etc/shdow')
     owner = cmd1.output.split(' ')[0][1:4]
     group = cmd1.output.split(' ')[0][4:7]
@@ -149,7 +149,7 @@ def check_vul6() : #Check Vul 2-4
 
 
 def check_vul7() : #Check Vul 2-5
-    title = ''
+    title = 'Check /etc/hosts file permissions adequacy'
     cmd1 = container.exec_run('ls -l /etc/hosts')
     owner = cmd1.output.split(' ')[0][1:4]
     group = cmd1.output.split(' ')[0][4:7]
@@ -161,10 +161,10 @@ def check_vul7() : #Check Vul 2-5
 
         
 def check_vul8() : #Check Vul 2-6 
-    title = ''
+    title = 'Check /etc/inetd.conf file permissions adequacy'
     cmd1 = container.exec_run('ls -l /etc/inetd.conf')
     if('No such file or directory' in cmd1.output) :
-        return [title, 'Check Later...']  
+        return [title, 'Safe'] # No file
     else :
         owner = cmd1.output.split(' ')[0][1:4]
         group = cmd1.output.split(' ')[0][4:7]
@@ -176,10 +176,10 @@ def check_vul8() : #Check Vul 2-6
 
 
 def check_vul9() : #Check Vul 2-7 
-    title = ''
+    title = 'Check /etc/syslog.conf file permissions adequacy'
     cmd1 = container.exec_run('ls -l /etc/syslog.conf')
     if('No such file or directory' in cmd1.output) :
-        return [title, 'Check Later...']  
+        return [title, 'Safe'] # No file
     else :
         owner = cmd1.output.split(' ')[0][1:4]
         group = cmd1.output.split(' ')[0][4:7]
@@ -191,7 +191,7 @@ def check_vul9() : #Check Vul 2-7
 
 
 def check_vul10() : #Check Vul 2-8
-    title = ''
+    title = 'Check /etc/services file permissions adequacy'
     cmd1 = container.exec_run('ls -l /etc/services')
     if('No such file or directory' in cmd1.output) :
         return [title, 'Check Later...']  
@@ -248,8 +248,8 @@ def check_vul11() : #Check Vul 2-9
         return [title, 'Vulnerable (Unsafe file num : %d)' %(cnt_unsafe) ] # Vulnerable
     
 
-def check_vul12() : #Check Vul 2-12
-    title = ''
+def check_vul12() : #Check Vul 2-10
+    title = 'Check that the owner and access rights to environment variable files within the home directory are set to Administrator or their account'
     env_list = ['.profile', '.kshrc', '.cshrc', '.bashrc', '.bash_profile', '.login', '.exrc', '.netrc']
 
     cnt_safe = 0
@@ -281,8 +281,9 @@ def check_vul12() : #Check Vul 2-12
     else :
         return [title, 'Vulnerable (Unsafe file num : %d)' %(cnt_unsafe) ] # Vulnerable
 
+
 def check_vul13() : #Check Vul 2-11
-    title = ''  
+    title = 'Check existence of unnecessary world writable files'  
     cmd1=container.exec_run('find / -type f -perm -2 -exec ls -l {} \;')
     result=cmd1.output.split('\n')
     del result[-1]  #last yoso is gongbaek so i delete last inde
@@ -335,14 +336,14 @@ def check_vul15(): #Check Vul 3-4
 
 
 def check_vul16(): #Check Vul 3-5 & 3-9
-    title = ''
+    title = 'Check whether services vulnerable to unused DOS attacks are running and whether unnecessary RPC services are running'
     cmd1 = container.exec_run('ls /etc/xinetd.d')
     services = cmd1.output.split('\n')
     del services[-1]
     cnt_safe = 0  #the number of safe files
     cnt_unsafe = 0
     if ('No such file' in cmd1.output):
-        return [title, 'Check Later...']  #  print('No xinetd.d file')
+        return [title, 'Safe'] # No file
     else:
         for i in services:
             cmd2 = container.exec_run('cat /etc/xinetd.d/%s' %(i))
@@ -361,7 +362,7 @@ def check_vul16(): #Check Vul 3-5 & 3-9
 
 
 def check_vul17(): #Check Vul 3-11
-    title = ''
+    title = 'Check whether services such as ftp, tftp, telnet, talk, etc. are enabled or vulnerabilities are published.'
     cmd1 = container.exec_run('ls /etc/xinetd.d')
     services = cmd1.output.split('\n')
     service_list = []
@@ -375,7 +376,7 @@ def check_vul17(): #Check Vul 3-11
         service_list.append('ntalk')
 
     if len(service_list) == 0:
-        return [title, 'Check Later...']  # print('[Vul 3-11] No File')
+        return [title, 'Safe'] # No file
     else:
         for i in service_list:
             cmd2 = container.exec_run('cat /etc/xinetd.d/talks')
