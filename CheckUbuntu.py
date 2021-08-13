@@ -130,7 +130,6 @@ def check_vul5() : #Check Vul 2-3
     owner = changeToDigit(owner)
     group = changeToDigit(group)
     etc = changeToDigit(etc)
-    print(cmd1.output.split(' ')[2])
     if(cmd1.output.split(' ')[2] == 'root' and owner <= 6 and group <= 4 and etc <= 4) :
         return [title, 'Safe']  
     else :
@@ -432,7 +431,7 @@ def check_vul19(): #Check Vul 3-13
         if ('grep' not in i and i != ''):
             list.append(i)
     if (len(list) > 0):
-        print('Vul3-13 is Safe(not using SMTP)')
+        return [title, 'Safe' ]
     else :
         #print('using SMTP')
         cmd1 = container.exec_run("grep '550 Relaying denied' /etc/mail/sendmail.cf").output.split('\n')[0]
@@ -509,24 +508,29 @@ def check_vul22(): #Check Vul 3-18
     is_safe2 = True
     
     #check APACHE_RUN_USER
-    if('' == cmd1.output or'No such file' in cmd1.output ) :
-        return [title, 'Safe' ] 
+    if('' == cmd1.output or 'No such file' in cmd1.output ) :
+        pass
     else : 
         privilege = cmd1.output.split('=')[1]
         if (privilege != 'root'):
-            return [title, 'Safe' ] 
+            pass
         else : 
-            return [title, 'Vulnerable' ] 
+            is_safe1 = False
 
     #check APACHE_RUN_USER
     if('' == cmd2.output) :
-        print('[Vul 3-18] No File or Directory')
+        pass
     else : 
         privilege = cmd2.output.split('=')[1]
         if (privilege != 'root'):
-            return [title, 'Safe' ] 
+            pass
         else : 
-            return [title, 'Vulnerable' ] 
+            is_safe2 = False
+
+    if (is_safe1 == True and is_safe2 == True) :
+        return [title, 'Safe']
+    else : 
+        return [title, 'Vulnerable' ] 
     
 
 def check_vul23(): #Check Vul 3-19
@@ -631,12 +635,21 @@ def remove_container():
 def main_func(service, version):
     make_container(service, version)
 
+    vul_name = []
+    vul_name.append('vul_name')
+
+    status = []
+    status.append('status')
+
     for i in range(1, 25):
         multi_list = []
         multi_list = eval('check_vul'+str(i))()
-        print(multi_list)
+        vul_name.append(multi_list[0])
+        status.append(multi_list[1])
+        
 
+    result = [vul_name, status]
+    print(result)
     remove_container()
 
-# main_func('ubuntu', '18.04')
-
+main_func('ubuntu', '18.04')
