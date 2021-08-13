@@ -14,6 +14,16 @@ import sys
 
 
 # def official_image()
+def official_image(i_name):
+    url = 'https://github.com/docker-library/official-images/tree/master/library/' + i_name
+    response = requests.get(url)
+
+    if response.status_code == 200:
+        return True
+    
+    else:
+        return False
+
 def find_compose(image_name):
     cmd = commands.getoutput(
         'find / -name ' + image_name + ' 2> /dev/null').split('\n')
@@ -332,10 +342,7 @@ def find_exploit(services):
         url_list = url_list + default_url
     
     return titles, cve_list, url_list
-        
 
-
-  
 
 if __name__ == "__main__":
     opts, args = getopt.getopt(sys.argv[1:], 'hosnctl', ['options'])
