@@ -79,11 +79,12 @@ def findVer_image(compose_path):
 
 
 def findVer_package(dir_path, compose_path):
-
+    not_build = True
+    
     if os.path.isfile(compose_path) == True:
         os.chdir(dir_path)
         cmd1=commands.getoutput('cat docker-compose.yaml').split('\n')
-        not_build = True
+       
 
         for i in cmd1:
             if 'build' in i:
@@ -180,11 +181,14 @@ def findVer_dockerfile(dir_path, compose_path):
     # find service name in compose file
     for c in cmd1 :
         service_name = c.replace(' ', '').split(':')[2]
-        dockerfile_path = dir_path + '/' +  service_name + '/Dockerfile'
+        dockerfile_path = dir_path + '/' +  service_name + 'Dockerfile'
 
         # find detail services in Dockerfile 
         cmd2 = commands.getoutput('grep FROM ' + dockerfile_path).split('\n')
      
+        if 'No such file' in cmd2[0] :
+            return False 
+
         for c in cmd2 : 
             d_service = c.split(' ')[1].replace(':',' ').split('-')[0]
             d_service_name = d_service.split(' ')[0]
@@ -329,150 +333,123 @@ def find_exploit(services):
     
     return titles, cve_list, url_list
         
-        # print('\n\033[1m\033[46m [ %s ] \033[0m' %(service))
-        # max_len=getLong(titles)
-        # #first line
-        # draw_line(max_len)
-        # #item name
-        # print("  Title", end="")
-        # for i in range(0, max_len-5) :
-        #     print(" ", end = "")
-        # print(' |  status')
-        # #second line
-        # draw_line(max_len)
-        # #print title & cve
-        # for i in range(0,len(titles)):
-        #     print('| '+ titles[i], end='')
-        #     for j in range(0, max_len-len(titles[i])):
-        #         print(' ',end='')
-        #     print(' | ', end='')
-        #     print('\033[91m'+"CVE-"+cve_list[i]+'\033[0m', end='')
-        #     for k in range(0, 30-len(cve_list[i])-6):
-        #         print(' ',end='')
-        #     print('|')
-        # #end line
-        # draw_line(max_len)
-
-  
-# def print_table(info_list):
-
 
 
   
 
 if __name__ == "__main__":
     opts, args = getopt.getopt(sys.argv[1:], 'hosnctl', ['options'])
+    print(opts)
+    print(args[0])
 
     if len(args) != 1:
-        print("You Wrong")
+        print('You Wrong')
 
     else:
+        image_name = args[0]
         if opts == []:
             opts = [('-t', ''), ('-c', '')]
-
-        print(opts)
         
+        
+        dir_path = find_compose(image_name)
+        compose_path = commands.getoutput('find ' + dir_path + ' -name docker-compose.y*') 
+
+        services = dict()
+        image_service = findVer_image(compose_path)
+        if image_service != False:
+            print('image_service ok')
+            services.update(image_service)
+            print(services)
+        
+        else:
+            print("That File doesn't have Iamge")
+
+        package_service = findVer_package(dir_path, compose_path)
+        if package_service != False:
+            print('package_service ok')
+            services.update(package_service)
+            print(services)
+        
+        else:
+            print("That File doesn't have Iamge")
+
+        env_service = findVer_env(dir_path, compose_path)
+        if env_service != False:
+            print('env_service ok')
+            services.update(env_service)
+            print(services)
+        
+        else:
+            print("That File doesn't have Iamge")
+
+        dockerfile_service = findVer_dockerfile(dir_path, compose_path)
+        if dockerfile_service != False:
+            print('dockerfile_service ok')
+            services.update(dockerfile_service)
+            print(services)
+        
+        else:
+            print("That File doesn't have Iamge")
+
+        print(services)
+
         for option, arg in opts:
+            print(option)
+
             if '-o' == option:
-                print("You enter option Check Official Image " + arg)
+                print('You enter option Check Official Image ' + image_name)
+                
+                
+                for service in image_service:
+                    official = official_image(service)
+                    
+                    if official:
+                        print('%s : Official Image' %service)
+                    
+                    else:
+                        print('%s : Not Official Image' %service)
             
             elif '-s' == option:
-                print("You enter option Check Service Version " + arg)
-            
-            elif '-n' == option:
-                print("You enter option Check num Exploit " + arg)
+                print("You enter option Check Service Version " + image_name)
+                
+                for service, version in services.items():
+                    print('%s : %s' %(service, version))
 
-            elif '-c' == option or '-t' == option or '-l' == option:
-                if '-t' == option:
-                    print("You enter option Print Title " + arg)
+            elif '-n' == option or '-t' == option or '-c' == option or '-l' == option:
+                print("have to make chart")
+                
+                title_list = ['TITLE']
+                cve_list = ['CVE']
+                url_list = ['URL']
+
+                # for service in image_service:
+                # def_titles, def_cves, def_urls = default_exploit(services)
+                find_titles, find_cves, find_urls = find_exploit(services)
+                #print(find_exploit)
+                # find_titles, find_cves, find_urls
+
+                print(find_titles)
+                print(find_cves)
+                print(find_urls)
+
+                    # titles = def_titles + find_titles
+                    # cves = def_cves + find_cves
+                    # urls = def_urls + find_urls
+                    # print(titles)
+                    # print(cves)
+                    # print(urls)
+
+
+
+                if '-n' == option:
+                    print("You enter option Check num Exploit " + image_name)
+
+
+                elif '-t' == option:
+                    print("You enter option Print Title " + image_name)
 
                 elif '-c' == option:
-                    print("You enter option Print CVE " + arg)
+                    print("You enter option Print CVE " + image_name)
 
                 elif '-l' == option:
-                    print("You enter option Print Link " + arg)
-    
-
-    # if dir_path == False:
-    #     print("You Don't Have that folder or file")
-
-    # print('Folder Path : %s' %(dir_path))
-
-    # compose_path = commands.getoutput('find ' + dir_path + ' -name docker-compose.y*')
-
-    # print('\nfindVer_image')
-    # findVer_image = findVer_image(compose_path)
-    # if findVer_image == False:
-    #     print('findVer_image X')
-    
-    # else :
-    #     print(findVer_image)
-    #     dic_services = findVer_image.copy()
-    
-    # print('\nfindVer_package')
-    # findVer_package = findVer_package(dir_path, compose_path)
-    # if findVer_package == False:
-    #     print('findVer_package X')
-    
-    # else :
-    #     print(findVer_package)
-    #     dic_services.update(findVer_package)
-        
-    # print('\nfindVer_env')
-    # findVer_env = findVer_env(dir_path, compose_path)
-    # if findVer_env == False:
-    #     print('findVer_env X')
-    
-    # else :
-    #     print(findVer_env)
-    #     dic_services.update(findVer_env)
-
-    # print('\nfindVer_dockerfile')
-    # findVer_dockerfile = findVer_dockerfile(dir_path, compose_path)
-    # if findVer_dockerfile == False:
-    #     print('findVer_dockerfile X')
-    
-    # else :
-    #     print(findVer_dockerfile)
-    #     dic_services.update(findVer_dockerfile)
-
-    # find_exploit(dic_services)
-
-
-
-
-   
-    # titles = []
-    # cve = []
-    # titles2 = []
-    # cve2 = []
-    # titles, cve = find_exploit(dic_services)
-    # titles2, cve2 = default_exploit(dic_services)
-    # titles = titles + titles2
-    # cve = cve + cve2
-    # max_len=getLong(titles)
-
-    # #first line
-    # draw_line(max_len)
-    # #item name
-    # print("  Title", end="")
-    # for i in range(0, max_len-5) :
-    #     print(" ", end = "")
-    # print('|  status')
-    # #second line
-    # draw_line(max_len)
-    # #print title & cve
-    # for i in range(0,len(titles)):
-    #     print('| '+ titles[i], end='')
-    #     for j in range(0, max_len-len(titles[i])):
-    #         print(' ',end='')
-    #     print('| ', end='')
-    #     print('\033[91m'+"CVE-"+cve[i]+'\033[0m', end='')
-    #     for k in range(0, 30-len(cve[i])-5):
-    #         print(' ',end='')
-    #     print('|')
-    # #end line
-    # draw_line(max_len)
-
-
- 
+                    print("You enter option Print Link " + image_name)
