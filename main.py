@@ -12,6 +12,7 @@ import getopt
 import sys
 import string
 import random
+import print_table as table
 #import CheckUbuntu as chenkU
 
 
@@ -365,6 +366,7 @@ if __name__ == "__main__":
     opts, args = getopt.getopt(sys.argv[1:], 'hosnctl', ['options'])
     print(opts)
     print(args[0])
+    optCheck = 0
 
     if len(args) != 1:
         print('You Wrong')
@@ -461,19 +463,33 @@ if __name__ == "__main__":
                         print(service[i])
                         print(len(find_titles[i]))
                 
-                
-                # print('[ %s ]' %service[i])
 
                 if '-t' == option:
                     print("You enter option Print Title " + image_name)
                     chart_list.append(title_list)
+                    optCheck += 1
                             
                 elif '-c' == option:
                     print("You enter option Print CVE " + image_name)
                     chart_list.append(cve_list)
+                    optCheck += 1
+
 
                 elif '-l' == option:
                     print("You enter option Print Link " + image_name)
                     chart_list.append(url_list)
+                    optCheck += 1
 
-        print(chart_list)
+
+        if optCheck != 0:
+            info_list = []
+
+            for service_i in range(services):
+                print('[ %s ]' %service_i)
+                for opt_i in range(optCheck):
+                    service_lsit = chart_list[opt_i][0] + chart_list[opt_i][service_i + 1]
+                    info_list.append(service_lsit)
+
+                print(info_list)
+                table.print_table(info_list)
+            
