@@ -299,9 +299,9 @@ def default_exploit(service): #only service name
 
 def find_exploit(services):
 
-    final_titles = []
-    final_cve_list = []
-    final_url_list = []   
+    final_titles = ['TITLE']
+    final_cve_list = ['CVE']
+    final_url_list = ['URL']   
 
     for service, version in services.items():  
         titles = []
@@ -348,9 +348,9 @@ def find_exploit(services):
         cve_list = cve_list + default_cves
         url_list = url_list + default_url
     
-        final_titles.append(titles)  
-        final_cve_list.append(cve_list)
-        final_url_list.append(url_list)
+        final_titles = final_titles + titles
+        final_cve_list = final_cve_list + cve_list
+        final_url_list = final_url_list + url_list
 
     return final_titles, final_cve_list, final_url_list
 
@@ -411,9 +411,6 @@ if __name__ == "__main__":
 
         print(services)
 
-        title_list = ['TITLE']
-        cve_list = ['CVE']
-        url_list = ['URL']
         execute = False
         chart_list = []
 
@@ -443,9 +440,9 @@ if __name__ == "__main__":
                 
                 if execute == False:
                     find_titles, find_cves, find_urls = find_exploit(services)
-                    title_list = title_list + find_titles
-                    cve_list = cve_list + find_cves
-                    url_list = url_list + find_urls
+                    # title_list = title_list + find_titles
+                    # cve_list = cve_list + find_cves
+                    # url_list = url_list + find_urls
                     execute = True
 
                 if '-n' == option:
@@ -456,18 +453,18 @@ if __name__ == "__main__":
                         print(len(find_titles[i]))
                 
                 
-                print('[ %s ]' %service[i])
+                # print('[ %s ]' %service[i])
 
                 if '-t' == option:
                     print("You enter option Print Title " + image_name)
-                    chart_list.append(title_list)
+                    chart_list.append(find_titles)
                             
                 elif '-c' == option:
                     print("You enter option Print CVE " + image_name)
-                    chart_list.append(cve_list)
+                    chart_list.append(find_cves)
 
                 elif '-l' == option:
                     print("You enter option Print Link " + image_name)
-                    chart_list.append(url_list)
+                    chart_list.append(find_urls)
 
         print(chart_list)
