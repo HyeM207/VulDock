@@ -383,41 +383,19 @@ if __name__ == "__main__":
         services = dict()
         image_service = findVer_image(compose_path)
         if image_service != False:
-            print('image_service ok')
             services.update(image_service)
-            print(services)
-        
-        else:
-            print("That File doesn't have Iamge")
 
         package_service = findVer_package(dir_path, compose_path)
         if package_service != False:
-            print('package_service ok')
             services.update(package_service)
-            print(services)
         
-        else:
-            print("That File doesn't have Iamge")
-
         env_service = findVer_env(dir_path, compose_path)
         if env_service != False:
-            print('env_service ok')
             services.update(env_service)
-            print(services)
-        
-        else:
-            print("That File doesn't have Iamge")
 
         dockerfile_service = findVer_dockerfile(dir_path, compose_path)
         if dockerfile_service != False:
-            print('dockerfile_service ok')
             services.update(dockerfile_service)
-            print(services)
-        
-        else:
-            print("That File doesn't have Iamge")
-
-        print(services)
 
         title_list = ['Title']
         cve_list = ['CVE']
@@ -428,9 +406,10 @@ if __name__ == "__main__":
         for option, arg in opts:
             print(option)
 
-            if '-o' == option:
-                print('You enter option Check Official Image ' + image_name)
-                
+            if '-a' == option:
+                opts = [('-o', ''), ('-s', ''), ('-n', ''), ('-t', ''), ('-c', ''), ('-l', '')]
+
+            elif '-o' == option:                
                 for service in image_service:
                     official = official_image(service)
                     
@@ -440,15 +419,11 @@ if __name__ == "__main__":
                     else:
                         print('%s : Not Official Image' %service)
             
-            elif '-s' == option:
-                print("You enter option Check Service Version " + image_name)
-                
+            elif '-s' == option:                
                 for service, version in services.items():
                     print('%s : %s' %(service, version))
 
-            elif '-n' == option or '-t' == option or '-c' == option or '-l' == option:
-                print("have to make chart")
-                
+            elif '-n' == option or '-t' == option or '-c' == option or '-l' == option:                
                 if execute == False:
                     find_titles, find_cves, find_urls = find_exploit(services)
                     title_list = title_list + find_titles
@@ -457,32 +432,26 @@ if __name__ == "__main__":
                     execute = True
 
                 if '-n' == option:
-                    print("You enter option Check num Exploit " + image_name)
-
                     for i in len(services):
                         print(service[i])
                         print(len(find_titles[i]))
                 
 
                 if '-t' == option:
-                    print("You enter option Print Title " + image_name)
                     chart_list.append(title_list)
                     optCheck += 1
                             
                 elif '-c' == option:
-                    print("You enter option Print CVE " + image_name)
                     chart_list.append(cve_list)
                     optCheck += 1
 
 
                 elif '-l' == option:
-                    print("You enter option Print Link " + image_name)
                     chart_list.append(url_list)
                     optCheck += 1
 
 
         if optCheck != 0:
-        
             for service_i in range(len(services)):
                 print('[ %s ]' %service_i)
                 info_list = []
