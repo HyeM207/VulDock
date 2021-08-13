@@ -38,7 +38,7 @@ def checkVersion() : # Check Version of Linux
 
 
     cmd1 = container.exec_run('cat /etc/issue')
-    if(version_list[0] in cmd1.output or version_list[1] in cmd1.output):
+    if(version_list[0] in cmd1 or version_list[1] in cmd1):
         print('Your Ubuntu Version is Latest')
 
     else :
@@ -52,14 +52,14 @@ def check_vul1() : # Check Vul 1-1
     cmd1 = "grep 'pam_securetty.so' /etc/pam.d/login"
     res1 = container.exec_run(cmd1)
 
-    if('auth [success=ok new_authtok_reqd=ok ignore=ignore user_unknown=bad default=die] pam_securetty.so' in res1.output 
-         or 'auth required /lib/security/pam_securetty.so' in res1.output):
-        if ('# auth' not in res1.output) :
+    if('auth [success=ok new_authtok_reqd=ok ignore=ignore user_unknown=bad default=die] pam_securetty.so' in res1 
+         or 'auth required /lib/security/pam_securetty.so' in res1):
+        if ('# auth' not in res1) :
             check1_1 += 1
 
     cmd2 = container.exec_run("grep 'pts/' /etc/securetty")
 
-    if(cmd2.output == ''):
+    if(cmd2 == ''):
         check1_1 += 1
 
     if(check1_1 == 2):
@@ -74,7 +74,7 @@ def check_vul2() : # Check Vul 1-4
     lens = 0
     cmd1 = container.exec_run('cat /etc/passwd')
   
-    for i in cmd1.output.split('\n'):
+    for i in cmd1.split('\n'):
         if (i != ''):
             lens += 1
             if(i.split(':')[1] == 'x') :
@@ -90,7 +90,7 @@ def check_vul3() : # Check Vul 2-1
     title = 'Check that the PATH environment variable in the root account contains \'.\''
     cmd1 = container.exec_run("bash -c 'echo $PATH'")
     
-    if('.' in cmd1.output or '::' in cmd1.output) :
+    if('.' in cmd1 or '::' in cmd1) :
         return [title, 'Vulnerable' ] 
     else :
         return [title, 'Safe']  
@@ -103,13 +103,13 @@ def check_vul4() : #Check Vul 2-2
     cmd1 = container.exec_run('find / -nouser -print')
     cmd2 = container.exec_run('find / -nogroup -print')
 
-    for i in cmd1.output.split('\n'):
+    for i in cmd1.split('\n'):
         if (i != ''):
             if ('No such file or directory' not in i):
                 is_safe1 = False
                 break 
 
-    for i in cmd2.output.split('\n'):
+    for i in cmd2.split('\n'):
         if ( i != ''):
             if ('No such file or directory' not in i):
                 is_safe2 = False
@@ -124,13 +124,13 @@ def check_vul4() : #Check Vul 2-2
 def check_vul5() : #Check Vul 2-3
     title = 'Check /etc/passwd file permissions adequacy'
     cmd1 = container.exec_run('ls -l /etc/passwd')
-    owner = cmd1.output.split(' ')[0][1:4]
-    group = cmd1.output.split(' ')[0][4:7]
-    etc = cmd1.output.split(' ')[0][7:]
+    owner = cmd1.split(' ')[0][1:4]
+    group = cmd1.split(' ')[0][4:7]
+    etc = cmd1.split(' ')[0][7:]
     owner = changeToDigit(owner)
     group = changeToDigit(group)
     etc = changeToDigit(etc)
-    if(cmd1.output.split(' ')[2] == 'root' and owner <= 6 and group <= 4 and etc <= 4) :
+    if(cmd1.split(' ')[2] == 'root' and owner <= 6 and group <= 4 and etc <= 4) :
         return [title, 'Safe']  
     else :
         return [title, 'Vulnerable' ] 
@@ -139,10 +139,10 @@ def check_vul5() : #Check Vul 2-3
 def check_vul6() : #Check Vul 2-4
     title = 'Check /etc/shadow file permissions adequacy'
     cmd1 = container.exec_run('ls -l /etc/shdow')
-    owner = cmd1.output.split(' ')[0][1:4]
-    group = cmd1.output.split(' ')[0][4:7]
-    etc = cmd1.output.split(' ')[0][7:]
-    if('r--' in owner and '---' in group and '---' in etc and cmd1.output.split(' ')[2] == 'root') :
+    owner = cmd1.split(' ')[0][1:4]
+    group = cmd1.split(' ')[0][4:7]
+    etc = cmd1.split(' ')[0][7:]
+    if('r--' in owner and '---' in group and '---' in etc and cmd1.split(' ')[2] == 'root') :
         return [title, 'Safe'] 
     else :
         return [title, 'Vulnerable' ]
@@ -151,10 +151,10 @@ def check_vul6() : #Check Vul 2-4
 def check_vul7() : #Check Vul 2-5
     title = 'Check /etc/hosts file permissions adequacy'
     cmd1 = container.exec_run('ls -l /etc/hosts')
-    owner = cmd1.output.split(' ')[0][1:4]
-    group = cmd1.output.split(' ')[0][4:7]
-    etc = cmd1.output.split(' ')[0][7:]
-    if('rw-' in owner and '---' in group and '---' in etc and cmd1.output.split(' ')[2] == 'root') :
+    owner = cmd1.split(' ')[0][1:4]
+    group = cmd1.split(' ')[0][4:7]
+    etc = cmd1.split(' ')[0][7:]
+    if('rw-' in owner and '---' in group and '---' in etc and cmd1.split(' ')[2] == 'root') :
         return [title, 'Safe']  
     else :
         return [title, 'Vulnerable' ] 
@@ -163,13 +163,13 @@ def check_vul7() : #Check Vul 2-5
 def check_vul8() : #Check Vul 2-6 
     title = 'Check /etc/inetd.conf file permissions adequacy'
     cmd1 = container.exec_run('ls -l /etc/inetd.conf')
-    if('No such file or directory' in cmd1.output) :
+    if('No such file or directory' in cmd1) :
         return [title, 'Safe'] # No file
     else :
-        owner = cmd1.output.split(' ')[0][1:4]
-        group = cmd1.output.split(' ')[0][4:7]
-        etc = cmd1.output.split(' ')[0][7:]
-        if('rw-' in owner and '---' in group and '---' in etc and cmd1.output.split(' ')[2] == 'root') :
+        owner = cmd1.split(' ')[0][1:4]
+        group = cmd1.split(' ')[0][4:7]
+        etc = cmd1.split(' ')[0][7:]
+        if('rw-' in owner and '---' in group and '---' in etc and cmd1.split(' ')[2] == 'root') :
             return [title, 'Safe']  
         else :
             return [title, 'Vulnerable' ] 
@@ -178,13 +178,13 @@ def check_vul8() : #Check Vul 2-6
 def check_vul9() : #Check Vul 2-7 
     title = 'Check /etc/syslog.conf file permissions adequacy'
     cmd1 = container.exec_run('ls -l /etc/syslog.conf')
-    if('No such file or directory' in cmd1.output) :
+    if('No such file or directory' in cmd1) :
         return [title, 'Safe'] # No file
     else :
-        owner = cmd1.output.split(' ')[0][1:4]
-        group = cmd1.output.split(' ')[0][4:7]
-        etc = cmd1.output.split(' ')[0][7:]
-        if('rw-' in owner and 'r--' in group and 'r--' in etc and cmd1.output.split(' ')[2] == 'root') :
+        owner = cmd1.split(' ')[0][1:4]
+        group = cmd1.split(' ')[0][4:7]
+        etc = cmd1.split(' ')[0][7:]
+        if('rw-' in owner and 'r--' in group and 'r--' in etc and cmd1.split(' ')[2] == 'root') :
             return [title, 'Safe']  
         else :
             return [title, 'Vulnerable' ] 
@@ -193,13 +193,13 @@ def check_vul9() : #Check Vul 2-7
 def check_vul10() : #Check Vul 2-8
     title = 'Check /etc/services file permissions adequacy'# /etc/services 파일 권한 적절성 점검
     cmd1 = container.exec_run('ls -l /etc/services')
-    if('No such file or directory' in cmd1.output) :
-        return [title, 'Check Later...']  
+    if('No such file or directory' in cmd1) :
+        return [title, 'Safe']  
     else :
-        owner = cmd1.output.split(' ')[0][1:4]
-        group = cmd1.output.split(' ')[0][4:7]
-        etc = cmd1.output.split(' ')[0][7:]
-        if('rw-' in owner and 'r--' in group and 'r--' in etc and cmd1.output.split(' ')[2] == 'root') :
+        owner = cmd1.split(' ')[0][1:4]
+        group = cmd1.split(' ')[0][4:7]
+        etc = cmd1.split(' ')[0][7:]
+        if('rw-' in owner and 'r--' in group and 'r--' in etc and cmd1.split(' ')[2] == 'root') :
             return [title, 'Safe'] 
         else :
             return [title, 'Vulnerable' ] 
@@ -216,11 +216,11 @@ def check_vul11() : #Check Vul 2-9
     
     for i in file_list:
         cmd1 = container.exec_run('ls -l {}'.format(i))
-        if('No such file or directory' in cmd1.output) :
+        if('No such file or directory' in cmd1) :
             no_exist.append(i)
         else :
-            owner = cmd1.output.split(' ')[0][1:4]
-            group = cmd1.output.split(' ')[0][4:7]
+            owner = cmd1.split(' ')[0][1:4]
+            group = cmd1.split(' ')[0][4:7]
             if('s' in owner or 's' in group) :     
                 SUID_list.append(i)
             else :
@@ -248,17 +248,17 @@ def check_vul12() : #Check Vul 2-10
 
     for env in env_list:
         cmd1  = container.exec_run('printenv HOME')
-        cmd2 = container.exec_run('ls -al' + cmd1.output.split('\n')[0] +'/'+ env)
+        cmd2 = container.exec_run('ls -al' + cmd1.split('\n')[0] +'/'+ env)
         cmd3 = container.exec_run('logname')
-        owner = cmd2.output.split(' ')[0][1:4]
-        group = cmd2.output.split(' ')[0][4:7]
-        etc = cmd2.output.split(' ')[0][7:]
+        owner = cmd2.split(' ')[0][1:4]
+        group = cmd2.split(' ')[0][4:7]
+        etc = cmd2.split(' ')[0][7:]
 
-        #print(cmd2.output)
-        if('No such file or directory' in cmd2.output) :
+        #print(cmd2)
+        if('No such file or directory' in cmd2) :
             cnt_pass += 1
         else : 
-            if (cmd2.output.split(' ')[2] == 'root' or cmd2.output.split(' ')[2] == cmd3.output) :
+            if (cmd2.split(' ')[2] == 'root' or cmd2.split(' ')[2] == cmd3) :
                 if ('w' not in group and 'w' not in etc ):
                     cnt_safe += 1 
                 else: 
@@ -275,7 +275,7 @@ def check_vul12() : #Check Vul 2-10
 def check_vul13() : #Check Vul 2-11
     title = 'Check existence of unnecessary world writable files'  
     cmd1=container.exec_run('find / -type f -perm -2 -exec ls -l {} \;')
-    result=cmd1.output.split('\n')
+    result=cmd1.split('\n')
     del result[-1]  #last yoso is gongbaek so i delete last inde
 
     cnt_unsafe = 0  #the number of unsafe files
@@ -299,7 +299,7 @@ def check_vul13() : #Check Vul 2-11
 def check_vul14(): #Check Vul 3-2
     title = 'Check anonymous FTP access allowed' #익명 FTP 접속 허용 여부 점검
     cmd1 = container.exec_run("grep 'ftp' /etc/passwd")
-    if (cmd1.output == ''):
+    if (cmd1 == ''):
         return [title, 'Safe' ] 
     else :
         return [title, 'Vulnerable' ]
@@ -310,16 +310,16 @@ def check_vul15(): #Check Vul 3-4
     file_list = ['cron.allow', 'cron.deny']
     for f in file_list:
         cmd1 = container.exec_run('ls -al /etc/%s' %(f))
-        if('No such file or directory' in cmd1.output) :
+        if('No such file or directory' in cmd1) :
             return [title, 'Safe' ] 
         else : 
-            owner = cmd1.output.split(' ')[0][1:4]
-            group = cmd1.output.split(' ')[0][4:7]
-            etc = cmd1.output.split(' ')[0][7:]
+            owner = cmd1.split(' ')[0][1:4]
+            group = cmd1.split(' ')[0][4:7]
+            etc = cmd1.split(' ')[0][7:]
             owner = changeToDigit(owner)
             group = changeToDigit(group)
             etc = changeToDigit(etc)
-            if(cmd1.output.split(' ')[2] == 'root' and owner <= 6 and group <=4 and owner <= 0) :
+            if(cmd1.split(' ')[2] == 'root' and owner <= 6 and group <=4 and owner <= 0) :
                 return [title, 'Safe' ] 
             else :
                 return [title, 'Vulnerable' ]
@@ -328,16 +328,16 @@ def check_vul15(): #Check Vul 3-4
 def check_vul16(): #Check Vul 3-5 & 3-9
     title = 'Check whether services vulnerable to unused DOS attacks are running and whether unnecessary RPC services are running'
     cmd1 = container.exec_run('ls /etc/xinetd.d')
-    services = cmd1.output.split('\n')
+    services = cmd1.split('\n')
     del services[-1]
     cnt_safe = 0  #the number of safe files
     cnt_unsafe = 0
-    if ('No such file' in cmd1.output):
+    if ('No such file' in cmd1):
         return [title, 'Safe'] # No file
     else:
         for i in services:
             cmd2 = container.exec_run('cat /etc/xinetd.d/%s' %(i))
-            result = cmd2.output.split('\n')
+            result = cmd2.split('\n')
             for j in result:
                 if 'disable' in j:
                     if 'yes' in j:
@@ -354,7 +354,7 @@ def check_vul16(): #Check Vul 3-5 & 3-9
 def check_vul17(): #Check Vul 3-11
     title = 'Check whether services such as ftp, tftp, telnet, talk, etc. are enabled or vulnerabilities are published.'
     cmd1 = container.exec_run('ls /etc/xinetd.d')
-    services = cmd1.output.split('\n')
+    services = cmd1.split('\n')
     service_list = []
     cnt_safe = 0
     cnt_unsafe = 0
@@ -370,7 +370,7 @@ def check_vul17(): #Check Vul 3-11
     else:
         for i in service_list:
             cmd2 = container.exec_run('cat /etc/xinetd.d/talks')
-            result = cmd2.output.split('\n')
+            result = cmd2.split('\n')
             for j in result:
                 if 'disable' in j:
                     if 'yes' in j:
@@ -434,7 +434,7 @@ def check_vul19(): #Check Vul 3-13
         return [title, 'Safe' ]
     else :
         #print('using SMTP')
-        cmd1 = container.exec_run("grep '550 Relaying denied' /etc/mail/sendmail.cf").output.split('\n')[0]
+        cmd1 = container.exec_run("grep '550 Relaying denied' /etc/mail/sendmail.cf").split('\n')[0]
         if(cmd1[0] == '#') :
             return [title, 'Vulnerable' ] 
         else :
@@ -444,10 +444,10 @@ def check_vul19(): #Check Vul 3-13
 def check_vul20(): #Check Vul 3-15
     title = 'Check for latest BIND version usage and periodic security patch security' # BIND 최신버전 사용 유무 및 주기적 보안 패치 보안 여부 점검
     cmd1 = container.exec_run('named -V')
-    if (cmd1.output == '' or 'not found' in cmd1.output):
+    if (cmd1 == '' or 'not found' in cmd1):
         return [title, 'Safe' ] 
     else :
-        version = cmd1.output.split('\n')[0]
+        version = cmd1.split('\n')[0]
       
     url = 'https://www.isc.org/download/'
     response = requests.get(url)
@@ -467,10 +467,10 @@ def check_vul21(): #Check Vul 3-17
     check = True
 
     #if os is ubuntu
-    if('No such file or directory' in cmd1.output and 'No such file or directory' in cmd2.output) :
+    if('No such file or directory' in cmd1 and 'No such file or directory' in cmd2) :
         return [title, 'Safe' ] 
-    elif('No such file or directory' in cmd2.output):
-        result = cmd1.output.split('\n')
+    elif('No such file or directory' in cmd2):
+        result = cmd1.split('\n')
 
         #find 'Indexes' option
         for i in result:
@@ -484,8 +484,8 @@ def check_vul21(): #Check Vul 3-17
           
 
     #if os is not ubuntu
-    elif('No such file or directory' in cmd1.output):
-        result = cmd2.output.split('\n')
+    elif('No such file or directory' in cmd1):
+        result = cmd2.split('\n')
 
         #find 'Indexes' option
         for i in result:
@@ -508,20 +508,20 @@ def check_vul22(): #Check Vul 3-18
     is_safe2 = True
     
     #check APACHE_RUN_USER
-    if('' == cmd1.output or 'No such file' in cmd1.output ) :
+    if('' == cmd1 or 'No such file' in cmd1 ) :
         pass
     else : 
-        privilege = cmd1.output.split('=')[1]
+        privilege = cmd1.split('=')[1]
         if (privilege != 'root'):
             pass
         else : 
             is_safe1 = False
 
     #check APACHE_RUN_USER
-    if('' == cmd2.output or 'No such file' in cmd2.output ) :
+    if('' == cmd2 or 'No such file' in cmd2 ) :
         pass
     else : 
-        privilege = cmd2.output.split('=')[1]
+        privilege = cmd2.split('=')[1]
         if (privilege != 'root'):
             pass
         else : 
@@ -539,10 +539,10 @@ def check_vul23(): #Check Vul 3-19
     cmd2 = container.exec_run("grep 'AllowOverride' /etc/apache2/apache2.conf")
     check = True
 
-    if('No such file or directory' in cmd1.output and 'No such file or directory' in cmd2.output) :
+    if('No such file or directory' in cmd1 and 'No such file or directory' in cmd2) :
         return [title, 'Safe' ] 
-    elif('No such file or directory' in cmd2.output):
-        result = cmd1.output.split('\n')
+    elif('No such file or directory' in cmd2):
+        result = cmd1.split('\n')
 
         #find 'None' option -> Not Safe
         for i in result:
@@ -557,8 +557,8 @@ def check_vul23(): #Check Vul 3-19
             
 
     #if os is not ubuntu
-    elif('No such file or directory' in cmd1.output):
-        result = cmd2.output.split('\n')
+    elif('No such file or directory' in cmd1):
+        result = cmd2.split('\n')
 
         #find 'Indexes' option
         for i in result:
@@ -580,10 +580,10 @@ def check_vul24(): #Check Vul 3-21
     check = True
 
     #if os is ubuntu
-    if('No such file or directory' in cmd1.output and 'No such file or directory' in cmd2.output) :
+    if('No such file or directory' in cmd1 and 'No such file or directory' in cmd2) :
         return [title, 'Safe' ] 
-    elif('No such file or directory' in cmd2.output):
-        result = cmd1.output.split('\n')
+    elif('No such file or directory' in cmd2):
+        result = cmd1.split('\n')
 
         #find 'Indexes' option
         for i in result:
@@ -597,8 +597,8 @@ def check_vul24(): #Check Vul 3-21
 
 
     #if os is not ubuntu
-    elif('No such file or directory' in cmd1.output):
-        result = cmd2.output.split('\n')
+    elif('No such file or directory' in cmd1):
+        result = cmd2.split('\n')
 
         #find 'Indexes' option
         for i in result:
@@ -638,7 +638,7 @@ def main_func(service, version):
     try : 
 
         vul_name = []
-        vul_name.append('Vul_name')
+        vul_name.append('Vul Title')
 
         status = []
         status.append('Status')
@@ -651,14 +651,13 @@ def main_func(service, version):
             
 
         result = [vul_name, status]
-        print(result)
         remove_container()
+        return result
 
     except Exception as e :
         print(e) 
         remove_container()
+        return 0
 
 
 
-
-main_func('ubuntu', '18.04')
