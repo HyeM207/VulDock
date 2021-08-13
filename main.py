@@ -251,10 +251,10 @@ def default_exploit(service): #only service name
         if(str(i).split(" ")[0] == 'MySQL' or str(i).split(" ")[0] == 'Oracle') :
             if v.search(i) == None:
                 title_list.append(i)
-                url_only = url[cnt-1]
-                url_list.append(url_only)
+                url = url_list[cnt-1]
+                url_list.append(url)
                 try :
-                    response = requests.get(url_only, headers={"User-Agent": "Mozilla/5.0"})
+                    response = requests.get(url, headers={"User-Agent": "Mozilla/5.0"})
                     if response.status_code == 200 :
                         html = response.text
                         soup = BeautifulSoup(html, 'html.parser')
@@ -274,10 +274,10 @@ def default_exploit(service): #only service name
             
             if v.search(i) == None:
                 title_list.append(i)
-                url_only = url[cnt-1]
-                url_list.append(url_only)
+                url = url_list[cnt-1]
+                url_list.append(url)
                 try :
-                    response = requests.get(url_only, headers={"User-Agent": "Mozilla/5.0"})
+                    response = requests.get(url, headers={"User-Agent": "Mozilla/5.0"})
                     if response.status_code == 200 :
                         html = response.text
                         soup = BeautifulSoup(html, 'html.parser')
@@ -411,12 +411,17 @@ if __name__ == "__main__":
 
         print(services)
 
+        title_list = ['TITLE']
+        cve_list = ['CVE']
+        url_list = ['URL']
+        execute = False
+        chart_list = []
+
         for option, arg in opts:
             print(option)
 
             if '-o' == option:
                 print('You enter option Check Official Image ' + image_name)
-                
                 
                 for service in image_service:
                     official = official_image(service)
@@ -436,38 +441,33 @@ if __name__ == "__main__":
             elif '-n' == option or '-t' == option or '-c' == option or '-l' == option:
                 print("have to make chart")
                 
-                title_list = ['TITLE']
-                cve_list = ['CVE']
-                url_list = ['URL']
-
-                # for service in image_service:
-                # def_titles, def_cves, def_urls = default_exploit(services)
-                find_titles, find_cves, find_urls = find_exploit(services)
-                #print(find_exploit)
-                # find_titles, find_cves, find_urls
-
-                print(find_titles)
-                print(find_cves)
-                print(find_urls)
-
-                    # titles = def_titles + find_titles
-                    # cves = def_cves + find_cves
-                    # urls = def_urls + find_urls
-                    # print(titles)
-                    # print(cves)
-                    # print(urls)
-
-
+                if execute == False:
+                    find_titles, find_cves, find_urls = find_exploit(services)
+                    title_list = title_list + find_titles
+                    cve_list = cve_list + find_cves
+                    url_list = url_list + find_urls
+                    execute = True
 
                 if '-n' == option:
                     print("You enter option Check num Exploit " + image_name)
 
+                    for i in len(services):
+                        print(service[i])
+                        print(len(find_titles[i]))
+                
+                
+                print('[ %s ]' %service[i])
 
-                elif '-t' == option:
+                if '-t' == option:
                     print("You enter option Print Title " + image_name)
-
+                    chart_list.append(title_list)
+                            
                 elif '-c' == option:
                     print("You enter option Print CVE " + image_name)
+                    chart_list.append(cve_list)
 
                 elif '-l' == option:
                     print("You enter option Print Link " + image_name)
+                    chart_list.append(url_list)
+
+        print(chart_list)
