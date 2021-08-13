@@ -39,7 +39,7 @@ def get_scale(info_list):
             scale_all = scale_title + scale_cve + scale_url            
             scale_list = [int(terminal_size*(scale_title/scale_all)), int(terminal_size*(scale_cve/scale_all)), 0]
 
-        elif 'Vul_name' in name_list and 'Status' in name_list:
+        elif 'Vul Title' in name_list and 'Status' in name_list:
             scale_vulname=7.0
             scale_status=3.0
             scale_all=10.0
@@ -235,7 +235,9 @@ def print_table(info_list):
                     print(' ', end = '')
 
         if size_vulname != 0:
+            
             if len(vul_list) < i+2:
+                
                 break
 
             if len(vul_list[i+1]) >= size_vulname:
