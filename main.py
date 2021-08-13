@@ -419,7 +419,7 @@ if __name__ == "__main__":
 
         print(services)
 
-        title_list = ['TITLE']
+        title_list = ['Title']
         cve_list = ['CVE']
         url_list = ['URL']
         execute = False
@@ -482,20 +482,19 @@ if __name__ == "__main__":
 
 
         if optCheck != 0:
-            info_list = []
-
+        
             for service_i in range(len(services)):
                 print('[ %s ]' %service_i)
-                service_list = []
+                info_list = []
 
                 for opt_i in range(optCheck):
-                    service_list.insert(i, chart_list[opt_i][0])
+                    service_list = []
+                    service_list.insert(0, chart_list[opt_i][0])
                     
-                    for title_i in range(chart_list[opt_i]):
-                        service_list.insert(chart_list[opt_i][service_i + 1][title_i])
-
+                    for title_i in range(len(chart_list[opt_i])):
+                        service_list.insert(title_i+1, chart_list[opt_i][service_i + 1][title_i])
+                        
                     info_list.append(service_list)
 
-                print(info_list)
                 table.print_table(info_list)
             
