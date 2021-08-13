@@ -486,9 +486,12 @@ if __name__ == "__main__":
 
             for service_i in range(services):
                 print('[ %s ]' %service_i)
+                service_list = []
                 for opt_i in range(optCheck):
-                    service_lsit = chart_list[opt_i][0] + chart_list[opt_i][service_i + 1]
-                    info_list.append(service_lsit)
+                    service_list.insert(i, chart_list[opt_i][0])
+                    for title_i in range(chart_list[opt_i]):
+                        service_list.insert(chart_list[opt_i][service_i + 1][title_i])
+                    info_list.append(service_list)
 
                 print(info_list)
                 table.print_table(info_list)
