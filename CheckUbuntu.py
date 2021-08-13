@@ -636,10 +636,10 @@ def main_func(service, version):
     make_container(service, version)
 
     vul_name = []
-    vul_name.append('vul_name')
+    vul_name.append('Vul_name')
 
     status = []
-    status.append('status')
+    status.append('Status')
 
     for i in range(1, 25):
         multi_list = []
