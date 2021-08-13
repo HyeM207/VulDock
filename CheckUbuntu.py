@@ -518,7 +518,7 @@ def check_vul22(): #Check Vul 3-18
             is_safe1 = False
 
     #check APACHE_RUN_USER
-    if('' == cmd2.output) :
+    if('' == cmd2.output or 'No such file' in cmd2.output ) :
         pass
     else : 
         privilege = cmd2.output.split('=')[1]
@@ -635,21 +635,30 @@ def remove_container():
 def main_func(service, version):
     make_container(service, version)
 
-    vul_name = []
-    vul_name.append('Vul_name')
+    try : 
 
-    status = []
-    status.append('Status')
+        vul_name = []
+        vul_name.append('Vul_name')
 
-    for i in range(1, 25):
-        multi_list = []
-        multi_list = eval('check_vul'+str(i))()
-        vul_name.append(multi_list[0])
-        status.append(multi_list[1])
-        
+        status = []
+        status.append('Status')
 
-    result = [vul_name, status]
-    print(result)
-    remove_container()
+        for i in range(1, 25):
+            multi_list = []
+            multi_list = eval('check_vul'+str(i))()
+            vul_name.append(multi_list[0])
+            status.append(multi_list[1])
+            
+
+        result = [vul_name, status]
+        print(result)
+        remove_container()
+
+    except Exception as e :
+        print(e) 
+        remove_container()
+
+
+
 
 main_func('ubuntu', '18.04')
