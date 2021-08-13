@@ -458,13 +458,18 @@ if __name__ == "__main__":
                 if '-t' == option:
                     print("You enter option Print Title " + image_name)
                     chart_list.append(find_titles)
+                    print(chart_list)
                             
                 elif '-c' == option:
                     print("You enter option Print CVE " + image_name)
                     chart_list.append(find_cves)
+                    print(chart_list)
+
 
                 elif '-l' == option:
                     print("You enter option Print Link " + image_name)
                     chart_list.append(find_urls)
+                    print(chart_list)
+
 
         print(chart_list)
