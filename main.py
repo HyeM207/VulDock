@@ -227,6 +227,7 @@ def getLong(list):
 
 def default_exploit(service): #only service name
     title = []
+    url = []
     url_list = []
     title_list = []
     cve_list = []
@@ -237,7 +238,7 @@ def default_exploit(service): #only service name
     for list in result:
         #print(list.get("Title"))
         title.append(list.get("Title"))
-        url_list.append(list.get("URL"))
+        url.append(list.get("URL"))
 
     os.remove('test1.json')
 
@@ -251,6 +252,7 @@ def default_exploit(service): #only service name
             if v.search(i) == None:
                 title_list.append(i)
                 url = url_list[cnt-1]
+                url_list.append(url)
                 try :
                     response = requests.get(url, headers={"User-Agent": "Mozilla/5.0"})
                     if response.status_code == 200 :
@@ -273,6 +275,7 @@ def default_exploit(service): #only service name
             if v.search(i) == None:
                 title_list.append(i)
                 url = url_list[cnt-1]
+                url_list.append(url)
                 try :
                     response = requests.get(url, headers={"User-Agent": "Mozilla/5.0"})
                     if response.status_code == 200 :
@@ -295,6 +298,10 @@ def default_exploit(service): #only service name
 
 
 def find_exploit(services):
+
+    final_titles = []
+    final_cve_list = []
+    final_url_list = []   
 
     for service, version in services.items():  
         titles = []
@@ -341,7 +348,11 @@ def find_exploit(services):
         cve_list = cve_list + default_cves
         url_list = url_list + default_url
     
-    return titles, cve_list, url_list
+        final_titles.append(titles)  
+        final_cve_list.append(cve_list)
+        final_url_list.append(url_list)
+
+    return final_titles, final_cve_list, final_url_list
 
 
 if __name__ == "__main__":
