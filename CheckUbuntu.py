@@ -1,13 +1,14 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*
 import argparse
 import docker
 import requests
 from bs4 import BeautifulSoup
 from subprocess import PIPE, Popen
+import subprocess
 import time
 import os
 
-cli = docker.from_env()
-# title list 
 
 def changeToDigit(priv) :
         result = 0
@@ -23,7 +24,7 @@ def changeToDigit(priv) :
 def checkVersion() : # Check Version of Linux
     url = 'https://ubuntu.com/download/desktop'
     response = requests.get(url)
-    if response.status_code == 200 :
+    if response.status_code == 200 :    
         html = response.text
         soup = BeautifulSoup(html, 'html.parser')
         target = soup.find('div', {'id':'main-content'})
@@ -62,9 +63,9 @@ def check_vul1() : # Check Vul 1-1
         check1_1 += 1
 
     if(check1_1 == 2):
-        return [title, 'Safe']  # safe
+        return [title, 'Safe']
     else: 
-        return [title, 'Vulnerable' ] #vulnerable
+        return [title, 'Vulnerable' ] 
 
 
 def check_vul2() : # Check Vul 1-4
@@ -80,9 +81,9 @@ def check_vul2() : # Check Vul 1-4
                 check += 1
     
     if(check == lens):
-        return [title, 'Safe']  # safe
+        return [title, 'Safe'] 
     else : 
-        return [title, 'Vulnerable' ] #vulnerable
+        return [title, 'Vulnerable' ] 
 
 
 def check_vul3() : # Check Vul 2-1
@@ -90,9 +91,9 @@ def check_vul3() : # Check Vul 2-1
     cmd1 = container.exec_run("bash -c 'echo $PATH'")
     
     if('.' in cmd1.output or '::' in cmd1.output) :
-        return [title, 'Vulnerable' ] #vulnerable
+        return [title, 'Vulnerable' ] 
     else :
-        return [title, 'Safe']  # safe
+        return [title, 'Safe']  
 
 
 def check_vul4() : #Check Vul 2-2
@@ -131,9 +132,9 @@ def check_vul5() : #Check Vul 2-3
     etc = changeToDigit(etc)
     print(cmd1.output.split(' ')[2])
     if(cmd1.output.split(' ')[2] == 'root' and owner <= 6 and group <= 4 and etc <= 4) :
-        return [title, 'Safe']  # Safe
+        return [title, 'Safe']  
     else :
-        return [title, 'Vulnerable' ] # Vulnerable
+        return [title, 'Vulnerable' ] 
 
 
 def check_vul6() : #Check Vul 2-4
@@ -143,9 +144,9 @@ def check_vul6() : #Check Vul 2-4
     group = cmd1.output.split(' ')[0][4:7]
     etc = cmd1.output.split(' ')[0][7:]
     if('r--' in owner and '---' in group and '---' in etc and cmd1.output.split(' ')[2] == 'root') :
-        return [title, 'Safe']  # Safe
+        return [title, 'Safe'] 
     else :
-        return [title, 'Vulnerable' ] # Vulnerable
+        return [title, 'Vulnerable' ]
 
 
 def check_vul7() : #Check Vul 2-5
@@ -155,9 +156,9 @@ def check_vul7() : #Check Vul 2-5
     group = cmd1.output.split(' ')[0][4:7]
     etc = cmd1.output.split(' ')[0][7:]
     if('rw-' in owner and '---' in group and '---' in etc and cmd1.output.split(' ')[2] == 'root') :
-        return [title, 'Safe']  # Safe
+        return [title, 'Safe']  
     else :
-        return [title, 'Vulnerable' ] # Vulnerable
+        return [title, 'Vulnerable' ] 
 
         
 def check_vul8() : #Check Vul 2-6 
@@ -170,9 +171,9 @@ def check_vul8() : #Check Vul 2-6
         group = cmd1.output.split(' ')[0][4:7]
         etc = cmd1.output.split(' ')[0][7:]
         if('rw-' in owner and '---' in group and '---' in etc and cmd1.output.split(' ')[2] == 'root') :
-            return [title, 'Safe']  # Safe
+            return [title, 'Safe']  
         else :
-            return [title, 'Vulnerable' ] # Vulnerable
+            return [title, 'Vulnerable' ] 
 
 
 def check_vul9() : #Check Vul 2-7 
@@ -185,9 +186,9 @@ def check_vul9() : #Check Vul 2-7
         group = cmd1.output.split(' ')[0][4:7]
         etc = cmd1.output.split(' ')[0][7:]
         if('rw-' in owner and 'r--' in group and 'r--' in etc and cmd1.output.split(' ')[2] == 'root') :
-            return [title, 'Safe']  # Safe
+            return [title, 'Safe']  
         else :
-            return [title, 'Vulnerable' ] # Vulnerable
+            return [title, 'Vulnerable' ] 
 
 
 def check_vul10() : #Check Vul 2-8
@@ -200,9 +201,9 @@ def check_vul10() : #Check Vul 2-8
         group = cmd1.output.split(' ')[0][4:7]
         etc = cmd1.output.split(' ')[0][7:]
         if('rw-' in owner and 'r--' in group and 'r--' in etc and cmd1.output.split(' ')[2] == 'root') :
-            return [title, 'Safe']  # Safe
+            return [title, 'Safe'] 
         else :
-            return [title, 'Vulnerable' ] # Vulnerable
+            return [title, 'Vulnerable' ] 
 
 
 def check_vul11() : #Check Vul 2-9
@@ -226,26 +227,16 @@ def check_vul11() : #Check Vul 2-9
             else :
                 UID_list.append(i)
 
-    # print('\n')
-    # print('[-] this file has SUID/SGID(NOT SAFE)\n')
     for i in SUID_list :
-        # print(' -' + i + '\n')
         cnt_unsafe += 1
-    # print('\n')
-    # print("[+] this file hasn't SUID/SGID(SAFE)\n")
+   
     for i in UID_list :
-        # print(' -' + i + '\n')
         cnt_safe += 1
-    # print('\n')
-    # print('[*] this file is not existed\n')
-    # for i in no_exist :
-    #     print(' -' + i + '\n')
-    # print('\n')
-
+  
     if cnt_unsafe == 0:
-        return [title, 'Safe' ] # Safe
+        return [title, 'Safe' ] 
     else :
-        return [title, 'Vulnerable (Unsafe file num : %d)' %(cnt_unsafe) ] # Vulnerable
+        return [title, 'Vulnerable (Unsafe file num : %d)' %(cnt_unsafe) ] 
     
 
 def check_vul12() : #Check Vul 2-10
@@ -277,9 +268,9 @@ def check_vul12() : #Check Vul 2-10
                 cnt_unsafe += 1
 
     if cnt_unsafe == 0:
-        return [title, 'Safe' ] # Safe
+        return [title, 'Safe' ] 
     else :
-        return [title, 'Vulnerable (Unsafe file num : %d)' %(cnt_unsafe) ] # Vulnerable
+        return [title, 'Vulnerable (Unsafe file num : %d)' %(cnt_unsafe) ] 
 
 
 def check_vul13() : #Check Vul 2-11
@@ -292,7 +283,7 @@ def check_vul13() : #Check Vul 2-11
 
     for i in result:
         if 'No such file' in i:
-            continue        # print('no file')
+            continue       
         else:
             owner = i.split(' ')[0][1:4]
             group = i.split(' ')[0][4:7]
@@ -301,18 +292,18 @@ def check_vul13() : #Check Vul 2-11
                 cnt_unsafe += 1
     
     if cnt_unsafe == 0:
-        return [title, 'Safe' ] # Safe
+        return [title, 'Safe' ] 
     else :
-        return [title, 'Vulnerable (Unsafe file num : %d)' %(cnt_unsafe) ] # Vulnerable 
+        return [title, 'Vulnerable (Unsafe file num : %d)' %(cnt_unsafe) ] 
 
 
 def check_vul14(): #Check Vul 3-2
     title = 'Check anonymous FTP access allowed' #익명 FTP 접속 허용 여부 점검
     cmd1 = container.exec_run("grep 'ftp' /etc/passwd")
     if (cmd1.output == ''):
-        return [title, 'Safe' ] # Safe
+        return [title, 'Safe' ] 
     else :
-        return [title, 'Vulnerable' ] #Vulnerable
+        return [title, 'Vulnerable' ]
 
 
 def check_vul15(): #Check Vul 3-4
@@ -321,7 +312,7 @@ def check_vul15(): #Check Vul 3-4
     for f in file_list:
         cmd1 = container.exec_run('ls -al /etc/%s' %(f))
         if('No such file or directory' in cmd1.output) :
-            print('Vul3-4 pass ( %s NO BIND )' %(f))
+            return [title, 'Safe' ] 
         else : 
             owner = cmd1.output.split(' ')[0][1:4]
             group = cmd1.output.split(' ')[0][4:7]
@@ -330,9 +321,9 @@ def check_vul15(): #Check Vul 3-4
             group = changeToDigit(group)
             etc = changeToDigit(etc)
             if(cmd1.output.split(' ')[2] == 'root' and owner <= 6 and group <=4 and owner <= 0) :
-                return [title, 'Safe' ] # Safe
+                return [title, 'Safe' ] 
             else :
-                return [title, 'Vulnerable' ] #Vulnerable
+                return [title, 'Vulnerable' ]
 
 
 def check_vul16(): #Check Vul 3-5 & 3-9
@@ -356,9 +347,9 @@ def check_vul16(): #Check Vul 3-5 & 3-9
     
         cnt_unsafe = len(services) - cnt_safe
         if cnt_unsafe == 0:
-            return [title, 'Safe' ] # Safe
+            return [title, 'Safe' ] 
         else :
-            return [title, 'Vulnerable (Unsafe file num : %d)' %(cnt_unsafe) ] # Vulnerable 
+            return [title, 'Vulnerable (Unsafe file num : %d)' %(cnt_unsafe) ] 
 
 
 def check_vul17(): #Check Vul 3-11
@@ -390,20 +381,18 @@ def check_vul17(): #Check Vul 3-11
         cnt_unsafe = len(service_list) - cnt_safe
 
         if cnt_unsafe == 0:
-            return [title, 'Safe' ] # Safe
+            return [title, 'Safe' ] 
         else :
-            return [title, 'Vulnerable (Unsafe file num : %d)' %(cnt_unsafe) ] # Vulnerable 
+            return [title, 'Vulnerable (Unsafe file num : %d)' %(cnt_unsafe) ]
 
 
 def check_vul18(): #Check Vul 3-12
     title = 'Check vulnerable version of Sendmail service availability' #취약한 버전의 Sendmail 서비스 이용 여부 점검
-    print('==== Check Vul 3-12 ====')
     proc1 = subprocess.Popen(['ps', '-ef'], stdout=subprocess.PIPE)
     proc2 = subprocess.Popen(['grep', 'sendmail'], stdin=proc1.stdout, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     proc1.stdout.close()
     out, err = proc2.communicate()
-    # print('out: {0}'.format(out))
-    # print('err: {0}'.format(err))
+
     proc1 = subprocess.Popen(['apt-cache', 'show', 'sendmail'], stdout=subprocess.PIPE)
     proc2 = subprocess.Popen(['grep', 'Version'], stdin=proc1.stdout, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     proc1.stdout.close()
@@ -416,7 +405,7 @@ def check_vul18(): #Check Vul 3-12
             list.append(i)
 
     if (len(list) > 0):
-        pass #print('using SMTP(Checking your Version)')
+        pass 
 
     else :    
         return [title, 'Safe' ] # 'Vul3-12 is Safe(not using sendmail Service)'
@@ -428,15 +417,12 @@ def check_vul18(): #Check Vul 3-12
         target = soup.find('div', {'class':'block-text-cols__body list-in-article'})
         td = target.find_all('p')
         p = str(td[0]).split('</a>')[0]
-        #print('Your Verson : ' + out2)
-        #print('**Recommended Latest Version**')
-        #print(p[3:].split('<')[0] + p[3:].split('>')[1])
+       
         return [title, 'Recommend Version : ' + p[3:].split('<')[0] + p[3:].split('>')[1]]     
 
 
 def check_vul19(): #Check Vul 3-13
     title = 'Check for relay limitations on SMTP servers' #SMTP 서버의 릴레이 기능 제한 여부 점검
-    print('==== Check Vul 3-13 ====')
     proc1 = subprocess.Popen(['ps', '-ef'], stdout=subprocess.PIPE)
     proc2 = subprocess.Popen(['grep', 'sendmail'], stdin=proc1.stdout, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     proc1.stdout.close()
@@ -451,21 +437,19 @@ def check_vul19(): #Check Vul 3-13
         #print('using SMTP')
         cmd1 = container.exec_run("grep '550 Relaying denied' /etc/mail/sendmail.cf").output.split('\n')[0]
         if(cmd1[0] == '#') :
-            return [title, 'Vulnerable' ] #Vulnerable
+            return [title, 'Vulnerable' ] 
         else :
-            return [title, 'Safe' ] #Safe
+            return [title, 'Safe' ]
 
 
 def check_vul20(): #Check Vul 3-15
     title = 'Check for latest BIND version usage and periodic security patch security' # BIND 최신버전 사용 유무 및 주기적 보안 패치 보안 여부 점검
-    print('==== Check Vul 3-15 ====')
     cmd1 = container.exec_run('named -V')
     if (cmd1.output == '' or 'not found' in cmd1.output):
-        return [title, 'Safe' ] #print('Vul3-15 is Safe( NO BIND )')
+        return [title, 'Safe' ] 
     else :
         version = cmd1.output.split('\n')[0]
-        #print('YOUR BIND VERSION : ' + version.split('-')[0].split(' ')[1])
-        #print('[*] ' + cmd1.output.split('\n')[0] + '\n')
+      
     url = 'https://www.isc.org/download/'
     response = requests.get(url)
     if response.status_code == 200 :
@@ -473,10 +457,6 @@ def check_vul20(): #Check Vul 3-15
         soup = BeautifulSoup(html, 'html.parser')
         target = soup.find('table', {'class':'table table-download table-borderless rounded text-left mb-5'})
         td = target.find_all('td')
-        #print('[ VERSION ]   [ RELEASE DATE ]   [ STATUS ]')
-        #print('  ' + td[0].text + '        ' + td[3].text + '       ' + td[1]['title'])
-        #print('  ' + td[6].text + '        ' + td[9].text + '       ' + td[7]['title'])
-        #print('  ' + td[12].text + '        ' + td[15].text + '       ' + td[13]['title'])
 
         return [title, 'Recommend Version : ' + td[0].text, ] 
 
@@ -489,7 +469,7 @@ def check_vul21(): #Check Vul 3-17
 
     #if os is ubuntu
     if('No such file or directory' in cmd1.output and 'No such file or directory' in cmd2.output) :
-        return [title, 'Safe' ] #Safe
+        return [title, 'Safe' ] 
     elif('No such file or directory' in cmd2.output):
         result = cmd1.output.split('\n')
 
@@ -499,10 +479,10 @@ def check_vul21(): #Check Vul 3-17
                 check = False
         
         if check == True:
-            return [title, 'Safe' ] #Safe
+            return [title, 'Safe' ]
         elif check == False:
-            return [title, 'Vulnerable' ] #Vulnerable
-            #print('You should remove "Indexes" option in apache2.conf file')
+            return [title, 'Vulnerable' ]
+          
 
     #if os is not ubuntu
     elif('No such file or directory' in cmd1.output):
@@ -515,27 +495,28 @@ def check_vul21(): #Check Vul 3-17
 
         
         if check == True:
-            return [title, 'Safe' ] #Safe
+            return [title, 'Safe' ] 
         elif check == False:
-            return [title, 'Vulnerable' ] #Vulnerable
-            #print("You should remove 'Indexes' option in apache2.conf file")
+            return [title, 'Vulnerable' ] 
+            
 
 
 def check_vul22(): #Check Vul 3-18
     title = 'Check whether Apache daemon is running with root privileges' #Apache 데몬이 root 권한으로 구동되는지 여부 점검
     cmd1 = container.exec_run("grep 'export APACHE_RUN_USER' /etc/apache2/envvars") # ubuntu
     cmd2 = container.exec_run("grep 'export APACHE_RUN_GROUP' /etc/apache2/envvars") # ubuntu
-    check = True
+    is_safe1 = True
+    is_safe2 = True
     
     #check APACHE_RUN_USER
-    if('' == cmd1.output) :
-        return [title, 'Safe' ] #'[Vul 3-18] No File or Directory'
+    if('' == cmd1.output or'No such file' in cmd1.output ) :
+        return [title, 'Safe' ] 
     else : 
         privilege = cmd1.output.split('=')[1]
         if (privilege != 'root'):
-            return [title, 'Safe' ] #Vul 3-18 (User) is safe
+            return [title, 'Safe' ] 
         else : 
-            return [title, 'Vulnerable' ] #Vul 3-18 (User) is not safe
+            return [title, 'Vulnerable' ] 
 
     #check APACHE_RUN_USER
     if('' == cmd2.output) :
@@ -543,9 +524,9 @@ def check_vul22(): #Check Vul 3-18
     else : 
         privilege = cmd2.output.split('=')[1]
         if (privilege != 'root'):
-            return [title, 'Safe' ] #Vul 3-18 (Group) is safe
+            return [title, 'Safe' ] 
         else : 
-            return [title, 'Vulnerable' ] #Vul 3-18 (Group) is not safe
+            return [title, 'Vulnerable' ] 
     
 
 def check_vul23(): #Check Vul 3-19
@@ -555,8 +536,7 @@ def check_vul23(): #Check Vul 3-19
     check = True
 
     if('No such file or directory' in cmd1.output and 'No such file or directory' in cmd2.output) :
-        #print('[Vul 3-19] No File or Directory')
-        return [title, 'Safe' ] #Safe
+        return [title, 'Safe' ] 
     elif('No such file or directory' in cmd2.output):
         result = cmd1.output.split('\n')
 
@@ -567,10 +547,10 @@ def check_vul23(): #Check Vul 3-19
                 break
 
         if check == True:
-            return [title, 'Safe' ] #Safe
+            return [title, 'Safe' ] 
         elif check == False:
-            return [title, 'Vulnerable' ] #Vulnerable
-            #print("You should Change 'None' Option to 'AutoConfig' in httpd.conf file")
+            return [title, 'Vulnerable' ] 
+            
 
     #if os is not ubuntu
     elif('No such file or directory' in cmd1.output):
@@ -583,10 +563,10 @@ def check_vul23(): #Check Vul 3-19
                 break
         
         if check == True:
-            return [title, 'Safe' ] #Safe
+            return [title, 'Safe' ] 
         elif check == False:
-            return [title, 'Vulnerable' ] #Vulnerable
-            #print("You should Change 'None' Option to 'AutoConfig' in httpd.conf file")
+            return [title, 'Vulnerable' ] 
+            
 
 
 def check_vul24(): #Check Vul 3-21
@@ -597,8 +577,7 @@ def check_vul24(): #Check Vul 3-21
 
     #if os is ubuntu
     if('No such file or directory' in cmd1.output and 'No such file or directory' in cmd2.output) :
-        #print('[Vul 3-21] No File or Directory')
-        return [title, 'Safe' ] #Safe
+        return [title, 'Safe' ] 
     elif('No such file or directory' in cmd2.output):
         result = cmd1.output.split('\n')
 
@@ -608,10 +587,10 @@ def check_vul24(): #Check Vul 3-21
                 check = False
         
         if check == True:
-            return [title, 'Safe' ] #Safe
+            return [title, 'Safe' ] 
         elif check == False:
-            return [title, 'Vulnerable' ] #Vulnerable
-            #print("You should remove 'FollowSymLinks' option in apache2.conf file")
+            return [title, 'Vulnerable' ] 
+
 
     #if os is not ubuntu
     elif('No such file or directory' in cmd1.output):
@@ -623,16 +602,41 @@ def check_vul24(): #Check Vul 3-21
                 check = False
         
         if check == True:
-           return [title, 'Safe' ] #Safe
+           return [title, 'Safe' ] 
         elif check == False:
-            return [title, 'Vulnerable' ] #Vulnerable
-            #print("You should remove 'FollowSymLinks' option in apache2.conf file")
+            return [title, 'Vulnerable' ] 
+          
 
 
 def make_container(service, version):
+    global container
+    global cli
+    global image
     # pull images and run container
+    cli = docker.from_env()
     image = service + ':' + version
-    print('docker image_name %s' %(iamge))
+    print('docker image_name %s' %(image))
     cli.images.pull(image)
     container = cli.containers.run(image,detach=True, tty=True)
+    print(cli.containers.list())
+
+
+def remove_container():
+    container.stop()
+    container.remove()
+    cli.images.remove(image,force=True)
+    print(cli.containers.list())
+
+
+def main_func(service, version):
+    make_container(service, version)
+
+    for i in range(1, 25):
+        multi_list = []
+        multi_list = eval('check_vul'+str(i))()
+        print(multi_list)
+
+    remove_container()
+
+# main_func('ubuntu', '18.04')
 
