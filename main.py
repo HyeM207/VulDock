@@ -10,6 +10,8 @@ import subprocess
 import re
 import getopt
 import sys
+import string
+import random
 #import CheckUbuntu as chenkU
 
 
@@ -231,8 +233,10 @@ def default_exploit(service): #only service name
     url_list = []
     title_list = []
     cve_list = []
-    cmd1 = commands.getoutput('searchsploit -jtw ' + service + ' > test1.json')
-    file = open('test1.json')
+    length_of_string = 8
+    filename = ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(length_of_string))+'.json'
+    cmd1 = commands.getoutput('searchsploit -jtw ' + service + ' > ' + filename)
+    file = open(filename)
     jsonObject = json.load(file)
     result = jsonObject.get("RESULTS_EXPLOIT")
     for list in result:
@@ -240,7 +244,7 @@ def default_exploit(service): #only service name
         title.append(list.get("Title"))
         url.append(list.get("URL"))
 
-    os.remove('test1.json')
+    os.remove(filename)
 
     v = re.compile('[0-9]')
     cnt = 0
@@ -308,12 +312,14 @@ def find_exploit(services):
         cve_list = []
         url_list = []     
         
-        cmd = commands.getoutput('searchsploit -jtw ' +  service + ' ' + str(version) + ' > test.json') 
-        file = open('test.json')
+        length_of_string = 8
+        filename = ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(length_of_string))+'.json'
+        cmd1 = commands.getoutput('searchsploit -jtw ' + service + ' > ' + filename)
+        file = open(filename)
         jsonObject = json.load(file)
         result = jsonObject.get("RESULTS_EXPLOIT")
         default_titles, default_cves, default_url = default_exploit(service)
-        os.remove('test.json')
+        os.remove(filename)
         
         
         for list in result:
