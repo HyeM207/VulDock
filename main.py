@@ -251,7 +251,7 @@ def default_exploit(service): #only service name
         if(str(i).split(" ")[0] == 'MySQL' or str(i).split(" ")[0] == 'Oracle') :
             if v.search(i) == None:
                 title_list.append(i)
-                url_only = url_list[cnt-1]
+                url_only = url[cnt-1]
                 url_list.append(url_only)
                 try :
                     response = requests.get(url_only, headers={"User-Agent": "Mozilla/5.0"})
@@ -274,7 +274,7 @@ def default_exploit(service): #only service name
             
             if v.search(i) == None:
                 title_list.append(i)
-                url_only = url_list[cnt-1]
+                url_only = url[cnt-1]
                 url_list.append(url_only)
                 try :
                     response = requests.get(url_only, headers={"User-Agent": "Mozilla/5.0"})
