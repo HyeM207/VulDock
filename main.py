@@ -251,10 +251,10 @@ def default_exploit(service): #only service name
         if(str(i).split(" ")[0] == 'MySQL' or str(i).split(" ")[0] == 'Oracle') :
             if v.search(i) == None:
                 title_list.append(i)
-                url = url_list[cnt-1]
-                url_list.append(url)
+                url_only = url_list[cnt-1]
+                url_list.append(url_only)
                 try :
-                    response = requests.get(url, headers={"User-Agent": "Mozilla/5.0"})
+                    response = requests.get(url_only, headers={"User-Agent": "Mozilla/5.0"})
                     if response.status_code == 200 :
                         html = response.text
                         soup = BeautifulSoup(html, 'html.parser')
@@ -274,10 +274,10 @@ def default_exploit(service): #only service name
             
             if v.search(i) == None:
                 title_list.append(i)
-                url = url_list[cnt-1]
-                url_list.append(url)
+                url_only = url_list[cnt-1]
+                url_list.append(url_only)
                 try :
-                    response = requests.get(url, headers={"User-Agent": "Mozilla/5.0"})
+                    response = requests.get(url_only, headers={"User-Agent": "Mozilla/5.0"})
                     if response.status_code == 200 :
                         html = response.text
                         soup = BeautifulSoup(html, 'html.parser')
