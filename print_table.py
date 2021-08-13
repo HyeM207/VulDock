@@ -161,7 +161,6 @@ def print_table(info_list):
     if size_title != 0:
         print('| %s' %column_list[0][0:size_title], end = '')
         if size_title-7 > 0:
-
             for i in range(0, size_title-7) :
                 print(' ', end = '')
 
@@ -235,9 +234,7 @@ def print_table(info_list):
                     print(' ', end = '')
 
         if size_vulname != 0:
-            
             if len(vul_list) < i+2:
-                
                 break
 
             if len(vul_list[i+1]) >= size_vulname:
@@ -248,7 +245,7 @@ def print_table(info_list):
                 for j in range(0, size_vulname - len(vul_list[i+1]) - 2) :
                     print(' ', end = '')
         
-        print('\n', end='')
+       
 
         if size_status != 0:
             if len(status_list) < i+2:
