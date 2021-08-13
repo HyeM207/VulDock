@@ -176,6 +176,20 @@ def print_table(info_list):
         if size_url-5 > 0:
             for i in range(0, size_url-5) :
                 print(' ', end = '')
+
+    if size_vulname != 0:
+        print('| %s' %column_ubuntu_list[0][0:size_vulname], end = '')
+        if size_vulname-10 > 0:
+            for i in range(0, size_vulname-10) :
+                print(' ', end = '')
+
+    if size_status != 0:
+        print('| %s' %column_ubuntu_list[1][0:size_status], end = '')
+        if size_status-8 > 0:
+            for i in range(0, size_status-8) :
+                print(' ', end = '')
+
+    
     
     print('\n', end='')
     draw_line(terminal_size)
@@ -219,9 +233,34 @@ def print_table(info_list):
                 print('| %s' %url_list[i+1], end = '')
                 for j in range(0, size_url - len(url_list[i+1]) - 2) :
                     print(' ', end = '')
+
+        if size_vulname != 0:
+            if len(vul_list) < i+2:
+                break
+
+            if len(vul_list[i+1]) >= size_vulname:
+                print('| %s' %vul_list[i+1][0:size_vulname-2], end = '')
+
+            else:
+                print('| %s' %vul_list[i+1], end = '')
+                for j in range(0, size_vulname - len(vul_list[i+1]) - 2) :
+                    print(' ', end = '')
         
         print('\n', end='')
 
+        if size_status != 0:
+            if len(status_list) < i+2:
+                break
+
+            if len(status_list[i+1]) >= size_status:
+                print('| %s' %status_list[i+1][0:size_status-2], end = '')
+
+            else:
+                print('| %s' %status_list[i+1], end = '')
+                for j in range(0, size_status - len(status_list[i+1]) - 2) :
+                    print(' ', end = '')
+        
+        print('\n', end='')
 
 
 
