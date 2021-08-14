@@ -390,20 +390,20 @@ if __name__ == "__main__":
 
         for option, arg in opts:
             if '-o' == option:
-                print('\n' + '\033[48;5;7m \033[38;5;0m' + '[ Check Official Image ]' + '\033[0m')
+                print('\n\033[48;5;7m\033[38;5;0m [ Check Official Image ] \033[0m')
                 for service in image_service:
                     official = official_image(service)
                     
                     if official:
-                        print(' > ' + '\033[38;5;178m' + service + '\033[0m' + ' : Official Image')
+                        print(' > \033[38;5;178m%s\033[0m : Official Image' %service)
                     
                     else:
-                        print(' > ' + '\033[38;5;178m' + service + '\033[0m' + ' : Unofficial Image')
+                        print(' > \033[38;5;178m%s\033[0m : Unofficial Image' %service)
             
             elif '-s' == option:
-                print('\n' + '\033[48;5;7m \033[38;5;0m' + '[ Service Version ]' + '\033[0m')
+                print('\n\033[48;5;7m\033[38;5;0m [ Service Version ] \033[0m')
                 for service, version in services.items():
-                    print(' > ' + '\033[38;5;178m' + service + '\033[0m' + ' : %s' %(version))
+                    print(' > \033[38;5;178m%s\033[0m : %s' %(service, version))
 
             elif '-n' == option or '-t' == option or '-c' == option or '-l' == option:
                 if execute == False:
@@ -414,11 +414,11 @@ if __name__ == "__main__":
                     execute = True
 
                 if '-n' == option:
-                    print('\n' + '\033[48;5;7m \033[38;5;0m' + '[ The Number of Vulnerabilities by Service ]' + '\033[0m')
+                    print('\n\033[48;5;7m\033[38;5;0m [ The Number of Vulnerabilities by Service ] \033[0m')
                     vul_total = 0
 
                     for i in range(len(services)):
-                        print(' > ' + '\033[38;5;178m' + service_keys[i] + '\033[0m' + ' : %d' %(len(find_titles[i])))
+                        print(' > \033[38;5;178m%s\033[0m : %d' %(service_keys[i], len(find_titles[i])))
                         vul_total += len(find_titles[i])
                     
                     print(' > Total Vulnerability : %d\n' %vul_total)
@@ -438,9 +438,9 @@ if __name__ == "__main__":
 
 
         if optCheck != 0:
-            print('\n' + '\033[48;5;7m \033[38;5;0m' + '[ Vulnerabilities Chart ]' + '\033[0m')
+            print('\n\033[48;5;7m\033[38;5;0m [ Vulnerabilities Chart ] \033[0m')
             for service_i in range(len(services)):
-                print(' > Service name : ' + '\033[38;5;178m' + service_keys[service_i] + '\033[0m')
+                print(' > Service name : \033[38;5;178m%s\033[0m' %service_keys[service_i])
                 info_list = []
 
                 for opt_i in range(optCheck):
@@ -453,3 +453,4 @@ if __name__ == "__main__":
                     info_list.append(service_list)
 
                 table.print_table(info_list)
+                print()
