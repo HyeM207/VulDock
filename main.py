@@ -425,7 +425,10 @@ if __name__ == "__main__":
                     vul_total = 0
 
                     for i in range(len(services)):
-                        print('%s : %d' %(service_keys[i], len(find_titles[i])))
+                        print('%s : %d' %(service_keys[i], len(find_titles[0][i])))
+                        vul_total += len(find_titles[0][i])
+                    
+                    print('Total Vulnerability : %d' %vul_total)
                 
                 elif '-t' == option:
                     chart_list.append(title_list)
