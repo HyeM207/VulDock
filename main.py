@@ -432,7 +432,7 @@ if __name__ == "__main__":
                     execute = True
 
                 if '-n' == option:
-                    for i in len(services.keys()):
+                    for i in range(len(services)):
                         print(service[i])
                         print(len(find_titles[i]))
                 
