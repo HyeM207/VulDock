@@ -432,11 +432,10 @@ if __name__ == "__main__":
                     execute = True
 
                 if '-n' == option:
-                    for i in len(services):
+                    for i in len(services.keys()):
                         print(service[i])
                         print(len(find_titles[i]))
                 
-
                 elif '-t' == option:
                     chart_list.append(title_list)
                     optCheck += 1
