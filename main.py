@@ -390,7 +390,7 @@ if __name__ == "__main__":
 
         for option, arg in opts:
             if '-o' == option:
-                print('\n' + '\033[48;5;8m' + '[ Check Official Image ]' + '\033[0m')
+                print('\n' + '\033[48;5;7m \033[38;5;0m' + '[ Check Official Image ]' + '\033[0m')
                 for service in image_service:
                     official = official_image(service)
                     
@@ -401,7 +401,7 @@ if __name__ == "__main__":
                         print(' > ' + '\033[38;5;178m' + service + '\033[0m' + ' : Unofficial Image')
             
             elif '-s' == option:
-                print('\n' + '\033[48;5;8m' + '[ Service Version ]' + '\033[0m')
+                print('\n' + '\033[48;5;7m \033[38;5;0m' + '[ Service Version ]' + '\033[0m')
                 for service, version in services.items():
                     print(' > ' + '\033[38;5;178m' + service + '\033[0m' + ' : %s' %(version))
 
@@ -414,7 +414,7 @@ if __name__ == "__main__":
                     execute = True
 
                 if '-n' == option:
-                    print('\n' + '\033[48;5;8m' + '[ The Number of Vulnerabilities by Service ]' + '\033[0m')
+                    print('\n' + '\033[48;5;7m \033[38;5;0m' + '[ The Number of Vulnerabilities by Service ]' + '\033[0m')
                     vul_total = 0
 
                     for i in range(len(services)):
@@ -438,7 +438,7 @@ if __name__ == "__main__":
 
 
         if optCheck != 0:
-            print('\n' + '\033[48;5;8m' + '[ Vulnerabilities Chart ]' + '\033[0m')
+            print('\n' + '\033[48;5;7m \033[38;5;0m' + '[ Vulnerabilities Chart ]' + '\033[0m')
             for service_i in range(len(services)):
                 print(' > Service name : ' + '\033[38;5;178m' + service_keys[service_i] + '\033[0m')
                 info_list = []
