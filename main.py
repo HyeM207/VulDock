@@ -397,6 +397,8 @@ if __name__ == "__main__":
         if dockerfile_service != False:
             services.update(dockerfile_service)
 
+        
+        service_keys = services.keys()
         title_list = ['Title']
         cve_list = ['CVE']
         url_list = ['URL']
@@ -432,7 +434,6 @@ if __name__ == "__main__":
                     execute = True
 
                 if '-n' == option:
-                    service_keys = services.keys()
                     for i in range(len(services)):
                         print(service_keys[i])
                         print(len(find_titles[i]))
