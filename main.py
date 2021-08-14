@@ -442,7 +442,7 @@ if __name__ == "__main__":
         if optCheck != 0:
             print('[ Vulnerabilities Chart ]')
             for service_i in range(len(services)):
-                print('[ %s ]' %service_i)
+                print('[ %s ]' %service_keys[service_i])
                 info_list = []
 
                 for opt_i in range(optCheck):
