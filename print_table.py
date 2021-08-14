@@ -251,10 +251,21 @@ def print_table(info_list):
                 break
 
             if len(status_list[i+1]) >= size_status:
-                print('| %s' %status_list[i+1][0:size_status-2], end = '')
+                if 'Safe' in status_list[i+1][0:size_status-2]:
+                    print('| \033[38;5;40m%s\033[0m' %status_list[i+1][0:size_status-2], end = '')
+                elif 'Vulnerable' in status_list[i+1][0:size_status-2]: 
+                    print('| \033[38;5;9m%s\033[0m' %status_list[i+1][0:size_status-2], end = '')
+                else : 
+                    print('| \033[38;5;214m%s\033[0m' %status_list[i+1][0:size_status-2], end = '')
 
             else:
-                print('| %s' %status_list[i+1], end = '')
+                if 'Safe' in status_list[i+1]:
+                    print('| \033[38;5;40m%s\033[0m' %status_list[i+1], end = '')
+                elif 'Vulnerable' in status_list[i+1]: 
+                    print('| \033[38;5;9m%s\033[0m' %status_list[i+1], end = '')
+                else : 
+                    print('| \033[38;5;214m%s\033[0m' %status_list[i+1], end = '')
+
                 for j in range(0, size_status - len(status_list[i+1]) - 2) :
                     print(' ', end = '')
         

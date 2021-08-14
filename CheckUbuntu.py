@@ -655,12 +655,8 @@ def main_func(service, version, linux_name):
                 multi_list = []
                 multi_list = eval('check_vul'+str(i))()
                 vul_name.append(multi_list[0])
-                if 'Safe' in multi_list[1]:
-                    status.append(multi_list[1])
-                elif 'Vulnerable' in multi_list[1]: 
-                    status.append('\033[38;5;9m' + multi_list[1] + ' \033[0m')
-                else : 
-                    status.append('\033[38;5;214m' + multi_list[1] + ' \033[0m')
+                status.append(multi_list[1])
+
        
 
             result = [vul_name, status]
