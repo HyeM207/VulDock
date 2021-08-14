@@ -403,7 +403,7 @@ if __name__ == "__main__":
         execute = False
         chart_list = []
 
-        if opts.find(('-a', '')):
+        if ('-a', '') in opts:
             opts = [('-o', ''), ('-s', ''), ('-n', ''), ('-t', ''), ('-c', ''), ('-l', '')]
 
         for option, arg in opts:
