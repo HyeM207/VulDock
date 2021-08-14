@@ -403,13 +403,13 @@ if __name__ == "__main__":
         execute = False
         chart_list = []
 
+        if opts.find(('-a', '')):
+            opts = [('-o', ''), ('-s', ''), ('-n', ''), ('-t', ''), ('-c', ''), ('-l', '')]
+
         for option, arg in opts:
             print(option)
 
-            if '-a' == option:
-                opts = [('-o', ''), ('-s', ''), ('-n', ''), ('-t', ''), ('-c', ''), ('-l', '')]
-
-            elif '-o' == option:                
+            if '-o' == option:                
                 for service in image_service:
                     official = official_image(service)
                     
