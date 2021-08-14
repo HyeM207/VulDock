@@ -454,3 +454,10 @@ if __name__ == "__main__":
 
                 table.print_table(info_list)
                 print()
+
+        for key, value in services.items() :
+            for linux_name in linux_os:
+                if linux_name in key.lower():
+                    #print(key, value)
+                    result = chenkU.main_func(key, value, linux_name)
+                    table.print_table(result)        

@@ -623,41 +623,55 @@ def make_container(service, version):
     print('docker image_name %s' %(image))
     cli.images.pull(image)
     container = cli.containers.run(image,detach=True, tty=True)
-    print(cli.containers.list())
+    #print(cli.containers.list())
 
 
 def remove_container():
     container.stop()
     container.remove()
     cli.images.remove(image,force=True)
-    print(cli.containers.list())
+    #print(cli.containers.list())
 
 
-def main_func(service, version):
+def main_func(service, version, linux_name):
+
     make_container(service, version)
 
-    try : 
+    cmd1 = container.exec_run('cat /etc/os-release')
+    #print(cmd1.output.split('\n')[0].split('=')[1].replace(" ","").lower())
+    os_name = cmd1.output.split('\n')[0].split('=')[1].replace(" ","").lower()
+    if linux_name in os_name :
+        #print("Trues")
 
-        vul_name = []
-        vul_name.append('Vul Title')
+        try : 
 
-        status = []
-        status.append('Status')
+            vul_name = []
+            vul_name.append('Vul Title')
 
-        for i in range(1, 25):
-            multi_list = []
-            multi_list = eval('check_vul'+str(i))()
-            vul_name.append(multi_list[0])
-            status.append(multi_list[1])
-            
+            status = []
+            status.append('Status')
 
-        result = [vul_name, status]
-        remove_container()
-        return result
+            for i in range(1, 25):
+                multi_list = []
+                multi_list = eval('check_vul'+str(i))()
+                vul_name.append(multi_list[0])
+                if 'Safe' in multi_list[1]:
+                    status.append(multi_list[1])
+                elif 'Vulnerable' in multi_list[1]: 
+                    status.append('\033[38;5;9m' + multi_list[1] + ' \033[0m')
+                else : 
+                    status.append('\033[38;5;214m' + multi_list[1] + ' \033[0m')
+       
 
-    except Exception as e :
-        print(e) 
-        remove_container()
+            result = [vul_name, status]
+            remove_container()
+            return result
+
+        except Exception as e :
+            print(e) 
+            remove_container()
+            return 0
+    else :
         return 0
 
 
