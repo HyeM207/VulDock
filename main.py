@@ -363,7 +363,7 @@ def find_exploit(services):
 
 
 if __name__ == "__main__":
-    opts, args = getopt.getopt(sys.argv[1:], 'hosnctl', ['options'])
+    opts, args = getopt.getopt(sys.argv[1:], 'haosnctl', ['options'])
     print(opts)
     print(args[0])
     optCheck = 0
