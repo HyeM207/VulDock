@@ -13,7 +13,7 @@ import sys
 import string
 import random
 import print_table as table
-#import CheckUbuntu as chenkU
+import CheckUbuntu as chenkU
 
 
 # def official_image()
@@ -209,23 +209,6 @@ def findVer_dockerfile(dir_path, compose_path):
             services[d_service_name] = d_service_ver
 
     return services
-
-
-def draw_line(long):
-    print('+', end = "")
-    for i in range(0, long) :
-        print("-", end = "")
-    for i in range(0, 32) :
-        print("-", end = "")
-    print('+')
-
-
-def getLong(list):
-    tmp=[]
-    for i in list:
-        tmp.append(len(i))
-    max_len=max(tmp)
-    return max_len
 
 
 def default_exploit(service): #only service name
@@ -467,4 +450,6 @@ if __name__ == "__main__":
                     info_list.append(service_list)
 
                 table.print_table(info_list)
-            
+        
+        if 'ubuntu' in service_keys:
+            chenkU.main_func('Ubuntu', services['Ubuntu'])
