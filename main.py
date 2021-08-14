@@ -437,7 +437,7 @@ if __name__ == "__main__":
                         print(len(find_titles[i]))
                 
 
-                if '-t' == option:
+                elif '-t' == option:
                     chart_list.append(title_list)
                     optCheck += 1
                             
