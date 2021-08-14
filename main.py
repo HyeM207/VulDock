@@ -394,7 +394,8 @@ if __name__ == "__main__":
         for option, arg in opts:
             print(option)
 
-            if '-o' == option:                
+            if '-o' == option:
+                print('[ Check Official Image ]')
                 for service in image_service:
                     official = official_image(service)
                     
@@ -404,11 +405,12 @@ if __name__ == "__main__":
                     else:
                         print('%s : Not Official Image' %service)
             
-            elif '-s' == option:                
+            elif '-s' == option:
+                print('[ Service Version ]')
                 for service, version in services.items():
                     print('%s : %s' %(service, version))
 
-            elif '-n' == option or '-t' == option or '-c' == option or '-l' == option:                
+            elif '-n' == option or '-t' == option or '-c' == option or '-l' == option:
                 if execute == False:
                     find_titles, find_cves, find_urls = find_exploit(services)
                     title_list = title_list + find_titles
@@ -416,10 +418,14 @@ if __name__ == "__main__":
                     url_list = url_list + find_urls
                     execute = True
 
+                    print(find_titles)
+
                 if '-n' == option:
+                    print('[ The Number of Vulnerabilities by Service ]')
+                    vul_total = 0
+
                     for i in range(len(services)):
-                        print(service_keys[i])
-                        print(len(find_titles[i]))
+                        print('%s : %d' %(service_keys[i], len(find_titles[i])))
                 
                 elif '-t' == option:
                     chart_list.append(title_list)
@@ -436,6 +442,7 @@ if __name__ == "__main__":
 
 
         if optCheck != 0:
+            print('[ Vulnerabilities Chart ]')
             for service_i in range(len(services)):
                 print('[ %s ]' %service_i)
                 info_list = []
@@ -450,6 +457,3 @@ if __name__ == "__main__":
                     info_list.append(service_list)
 
                 table.print_table(info_list)
-        
-        if 'ubuntu' in service_keys:
-            chenkU.main_func('Ubuntu', services['Ubuntu'])
