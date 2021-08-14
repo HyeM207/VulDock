@@ -455,6 +455,7 @@ if __name__ == "__main__":
                 table.print_table(info_list)
                 print()
 
+        linux_os = ['debian', 'linux' ,'ubuntu','redhat', 'kali' ,'fedora', 'centos']
         for key, value in services.items() :
             for linux_name in linux_os:
                 if linux_name in key.lower():
