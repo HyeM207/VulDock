@@ -11,7 +11,6 @@ def draw_line(terminal_size):
 def get_scale(info_list):
     rows, terminal_size = os.popen('stty size', 'r').read().split()
     terminal_size=int(terminal_size)
-    print(terminal_size)
 
     # title, cve, url
     name_list = []
