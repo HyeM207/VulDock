@@ -27,6 +27,7 @@ def official_image(i_name):
     else:
         return False
 
+
 def find_compose(image_name):
     cmd = commands.getoutput(
         'find / -name ' + image_name + ' 2> /dev/null').split('\n')
@@ -130,7 +131,6 @@ def findVer_package(dir_path, compose_path):
                 return services
 
         else:
-            print('package.json is not exited')
             return False
             
 
@@ -346,8 +346,6 @@ def find_exploit(services):
 
 if __name__ == "__main__":
     opts, args = getopt.getopt(sys.argv[1:], 'haosnctl', ['options'])
-    print(opts)
-    print(args[0])
     optCheck = 0
 
     if len(args) != 1:
@@ -392,20 +390,20 @@ if __name__ == "__main__":
 
         for option, arg in opts:
             if '-o' == option:
-                print('[ Check Official Image ]')
+                print('\n' + '\033[103m' + '[ Check Official Image ]' + '\033[0m')
                 for service in image_service:
                     official = official_image(service)
                     
                     if official:
-                        print('%s : Official Image\n' %service)
+                        print(' > ' + '\033[91m' + service + '\033[0m' + ' : Official Image')
                     
                     else:
-                        print('%s : Unofficial Image\n' %service)
+                        print(' > ' + '\033[91m' + service + '\033[0m' + ' : Unofficial Image')
             
             elif '-s' == option:
-                print('[ Service Version ]')
+                print('\n' + '\033[103m' + '[ Service Version ]' + '\033[0m')
                 for service, version in services.items():
-                    print('%s : %s\n' %(service, version))
+                    print(' > ' + '\033[91m' + service + '\033[0m' + ' : %s' %(version))
 
             elif '-n' == option or '-t' == option or '-c' == option or '-l' == option:
                 if execute == False:
@@ -416,14 +414,14 @@ if __name__ == "__main__":
                     execute = True
 
                 if '-n' == option:
-                    print('[ The Number of Vulnerabilities by Service ]')
+                    print('\n' + '\033[103m' + '[ The Number of Vulnerabilities by Service ]' + '\033[0m')
                     vul_total = 0
 
                     for i in range(len(services)):
-                        print('%s : %d' %(service_keys[i], len(find_titles[i])))
+                        print(' > ' + '\033[91m' + service_keys[i] + '\033[0m' + ' : %d' %(len(find_titles[i])))
                         vul_total += len(find_titles[i])
                     
-                    print('Total Vulnerability : %d\n' %vul_total)
+                    print(' > Total Vulnerability : %d\n' %vul_total)
                 
                 elif '-t' == option:
                     chart_list.append(title_list)
@@ -440,9 +438,9 @@ if __name__ == "__main__":
 
 
         if optCheck != 0:
-            print('[ Vulnerabilities Chart ]')
+            print('\n' + '\033[103m' + '[ Vulnerabilities Chart ]' + '\033[0m')
             for service_i in range(len(services)):
-                print('[ %s ]' %service_keys[service_i])
+                print(' > Service name : ' + '\033[91m' + service_keys[service_i] + '\033[0m')
                 info_list = []
 
                 for opt_i in range(optCheck):
