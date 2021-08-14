@@ -135,7 +135,6 @@ def findVer_package(dir_path, compose_path):
             
 
     elif not_build == True:
-        print('no build')
         return False
 
 
@@ -392,23 +391,21 @@ if __name__ == "__main__":
             opts = [('-o', ''), ('-s', ''), ('-n', ''), ('-t', ''), ('-c', ''), ('-l', '')]
 
         for option, arg in opts:
-            print(option)
-
             if '-o' == option:
                 print('[ Check Official Image ]')
                 for service in image_service:
                     official = official_image(service)
                     
                     if official:
-                        print('%s : Official Image' %service)
+                        print('%s : Official Image\n' %service)
                     
                     else:
-                        print('%s : Not Official Image' %service)
+                        print('%s : Unofficial Image\n' %service)
             
             elif '-s' == option:
                 print('[ Service Version ]')
                 for service, version in services.items():
-                    print('%s : %s' %(service, version))
+                    print('%s : %s\n' %(service, version))
 
             elif '-n' == option or '-t' == option or '-c' == option or '-l' == option:
                 if execute == False:
@@ -418,17 +415,15 @@ if __name__ == "__main__":
                     url_list = url_list + find_urls
                     execute = True
 
-                    print(find_titles)
-
                 if '-n' == option:
                     print('[ The Number of Vulnerabilities by Service ]')
                     vul_total = 0
 
                     for i in range(len(services)):
-                        print('%s : %d' %(service_keys[i], len(find_titles[0][i])))
-                        vul_total += len(find_titles[0][i])
+                        print('%s : %d' %(service_keys[i], len(find_titles[i])))
+                        vul_total += len(find_titles[i])
                     
-                    print('Total Vulnerability : %d' %vul_total)
+                    print('Total Vulnerability : %d\n' %vul_total)
                 
                 elif '-t' == option:
                     chart_list.append(title_list)
@@ -454,7 +449,7 @@ if __name__ == "__main__":
                     service_list = []
                     service_list.insert(0, chart_list[opt_i][0])
                     
-                    for title_i in range(len(chart_list[opt_i])):
+                    for title_i in range(len(chart_list[opt_i][service_i+1])):
                         service_list.insert(title_i+1, chart_list[opt_i][service_i + 1][title_i])
                         
                     info_list.append(service_list)
