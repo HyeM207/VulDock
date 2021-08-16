@@ -1,13 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*
-import argparse
 import docker
 import requests
 from bs4 import BeautifulSoup
-from subprocess import PIPE, Popen
 import subprocess
-import time
-import os
 import print_table as table
 
 
@@ -192,7 +188,7 @@ def check_vul9() : #Check Vul 2-7
 
 
 def check_vul10() : #Check Vul 2-8
-    title = 'Check /etc/services file permissions adequacy'# /etc/services 파일 권한 적절성 점검
+    title = 'Check /etc/services file permissions adequacy'
     cmd1 = container.exec_run('ls -l /etc/services')
     if('No such file or directory' in cmd1.output) :
         return [title, 'Safe']  
@@ -207,9 +203,7 @@ def check_vul10() : #Check Vul 2-8
 
 
 def check_vul11() : #Check Vul 2-9
-    title = 'Check for SUID, SGID settings for unnecessary or malicious files' #불필요하거나 악의적인 파일에 SUID, SGID 설정 여부 점검
-    cnt_unsafe = 0 
-    cnt_safe = 0 
+    title = 'Check for SUID, SGID settings for unnecessary or malicious files'
     no_exist=[]   
     SUID_list = []
     UID_list = []
@@ -277,9 +271,9 @@ def check_vul13() : #Check Vul 2-11
     title = 'Check existence of unnecessary world writable files'  
     cmd1=container.exec_run('find / -type f -perm -2 -exec ls -l {} \;')
     result=cmd1.output.split('\n')
-    del result[-1]  #last yoso is gongbaek so i delete last inde
+    del result[-1] 
 
-    cnt_unsafe = 0  #the number of unsafe files
+    cnt_unsafe = 0 
 
     for i in result:
         if 'No such file' in i:
@@ -290,7 +284,7 @@ def check_vul13() : #Check Vul 2-11
             etc = i.split(' ')[0][7:]
             if ('w' in etc) :
                 cnt_unsafe += 1
-    
+    |
     if cnt_unsafe == 0:
         return [title, 'Safe' ] 
     else :
@@ -298,7 +292,7 @@ def check_vul13() : #Check Vul 2-11
 
 
 def check_vul14(): #Check Vul 3-2
-    title = 'Check anonymous FTP access allowed' #익명 FTP 접속 허용 여부 점검
+    title = 'Check anonymous FTP access allowed' 
     cmd1 = container.exec_run("grep 'ftp' /etc/passwd")
     if (cmd1.output == ''):
         return [title, 'Safe' ] 
@@ -307,7 +301,7 @@ def check_vul14(): #Check Vul 3-2
 
 
 def check_vul15(): #Check Vul 3-4
-    title = 'Check permission adequacy of Cron-related files' # Cron  관련 파일의 권한 적절성 점검
+    title = 'Check permission adequacy of Cron-related files' 
     file_list = ['cron.allow', 'cron.deny']
     for f in file_list:
         cmd1 = container.exec_run('ls -al /etc/%s' %(f))
@@ -331,10 +325,10 @@ def check_vul16(): #Check Vul 3-5 & 3-9
     cmd1 = container.exec_run('ls /etc/xinetd.d')
     services = cmd1.output.split('\n')
     del services[-1]
-    cnt_safe = 0  #the number of safe files
+    cnt_safe = 0  
     cnt_unsafe = 0
     if ('No such file' in cmd1.output):
-        return [title, 'Safe'] # No file
+        return [title, 'Safe'] 
     else:
         for i in services:
             cmd2 = container.exec_run('cat /etc/xinetd.d/%s' %(i))
@@ -367,7 +361,7 @@ def check_vul17(): #Check Vul 3-11
         service_list.append('ntalk')
 
     if len(service_list) == 0:
-        return [title, 'Safe'] # No file
+        return [title, 'Safe'] 
     else:
         for i in service_list:
             cmd2 = container.exec_run('cat /etc/xinetd.d/talks')
@@ -387,7 +381,7 @@ def check_vul17(): #Check Vul 3-11
 
 
 def check_vul18(): #Check Vul 3-12
-    title = 'Check vulnerable version of Sendmail service availability' #취약한 버전의 Sendmail 서비스 이용 여부 점검
+    title = 'Check vulnerable version of Sendmail service availability'
     proc1 = subprocess.Popen(['ps', '-ef'], stdout=subprocess.PIPE)
     proc2 = subprocess.Popen(['grep', 'sendmail'], stdin=proc1.stdout, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     proc1.stdout.close()
@@ -408,7 +402,7 @@ def check_vul18(): #Check Vul 3-12
         pass 
 
     else :    
-        return [title, 'Safe' ] # 'Vul3-12 is Safe(not using sendmail Service)'
+        return [title, 'Safe' ] # Check Vul Vul3-12
     url = 'https://www.proofpoint.com/us/products/email-protection/open-source-email-solution'
     response = requests.get(url)
     if response.status_code == 200 :
@@ -421,8 +415,8 @@ def check_vul18(): #Check Vul 3-12
         return [title, 'Recommend Version : ' + p[3:].split('<')[0] + p[3:].split('>')[1]]     
 
 
-def check_vul19(): #Check Vul 3-13
-    title = 'Check for relay limitations on SMTP servers' #SMTP 서버의 릴레이 기능 제한 여부 점검
+def check_vul19(): # Check Vul 3-13
+    title = 'Check for relay limitations on SMTP servers'
     proc1 = subprocess.Popen(['ps', '-ef'], stdout=subprocess.PIPE)
     proc2 = subprocess.Popen(['grep', 'sendmail'], stdin=proc1.stdout, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     proc1.stdout.close()
@@ -443,7 +437,7 @@ def check_vul19(): #Check Vul 3-13
 
 
 def check_vul20(): #Check Vul 3-15
-    title = 'Check for latest BIND version usage and periodic security patch security' # BIND 최신버전 사용 유무 및 주기적 보안 패치 보안 여부 점검
+    title = 'Check for latest BIND version usage and periodic security patch security' 
     cmd1 = container.exec_run('named -V')
     if (cmd1.output == '' or 'not found' in cmd1.output):
         return [title, 'Safe' ] 
@@ -462,7 +456,7 @@ def check_vul20(): #Check Vul 3-15
 
 
 def check_vul21(): #Check Vul 3-17
-    title = 'Check for activation of Apache Directory Search feature' #Apache 디렉토리 검색 기능의 활성화 여부 점검
+    title = 'Check for activation of Apache Directory Search feature' 
     cmd1 = container.exec_run('cat /etc/apache2/apache2.conf')
     cmd2 = container.exec_run('cat /etc/apache2/httpd.conf')
     check = True
@@ -502,9 +496,9 @@ def check_vul21(): #Check Vul 3-17
 
 
 def check_vul22(): #Check Vul 3-18
-    title = 'Check whether Apache daemon is running with root privileges' #Apache 데몬이 root 권한으로 구동되는지 여부 점검
-    cmd1 = container.exec_run("grep 'export APACHE_RUN_USER' /etc/apache2/envvars") # ubuntu
-    cmd2 = container.exec_run("grep 'export APACHE_RUN_GROUP' /etc/apache2/envvars") # ubuntu
+    title = 'Check whether Apache daemon is running with root privileges' 
+    cmd1 = container.exec_run("grep 'export APACHE_RUN_USER' /etc/apache2/envvars") 
+    cmd2 = container.exec_run("grep 'export APACHE_RUN_GROUP' /etc/apache2/envvars") 
     is_safe1 = True
     is_safe2 = True
     
@@ -535,7 +529,7 @@ def check_vul22(): #Check Vul 3-18
     
 
 def check_vul23(): #Check Vul 3-19
-    title = 'Check whether the Apache parent path can be moved due to the use of characters' # 문자 사용으로 인한 Apache 상위 경로로 이동이 가능한지 여부 점검
+    title = 'Check whether the Apache parent path can be moved due to the use of characters' 
     cmd1 = container.exec_run("grep 'AllowOverride' /etc/apache2/httpd.conf")
     cmd2 = container.exec_run("grep 'AllowOverride' /etc/apache2/apache2.conf")
     check = True
@@ -575,7 +569,7 @@ def check_vul23(): #Check Vul 3-19
 
 
 def check_vul24(): #Check Vul 3-21
-    title = 'Symbolic links, checking alias for restrictions on use' # 심볼릭 링크, aliases 사용 제한 여부 점검
+    title = 'Symbolic links, checking alias for restrictions on use' 
     cmd1 = container.exec_run('cat /etc/apache2/apache2.conf')
     cmd2 = container.exec_run('cat /etc/apache2/httpd.conf')
     check = True
@@ -617,31 +611,26 @@ def make_container(service, version):
     global container 
     global cli
     global image
-    # pull images and run container
+   
     cli = docker.from_env()
     image = service + ':' + version
     print('docker image_name %s' %(image))
     cli.images.pull(image)
     container = cli.containers.run(image,detach=True, tty=True)
-    #print(cli.containers.list())
 
 
 def remove_container():
     container.stop()
     container.remove()
     cli.images.remove(image,force=True)
-    #print(cli.containers.list())
 
 
 def main_func(service, version, linux_name):
-
     make_container(service, version)
-
     cmd1 = container.exec_run('cat /etc/os-release')
-    #print(cmd1.output.split('\n')[0].split('=')[1].replace(" ","").lower())
+    
     os_name = cmd1.output.split('\n')[0].split('=')[1].replace(" ","").lower()
     if linux_name in os_name :
-        #print("Trues")
 
         try : 
 
@@ -656,8 +645,6 @@ def main_func(service, version, linux_name):
                 multi_list = eval('check_vul'+str(i))()
                 vul_name.append(multi_list[0])
                 status.append(multi_list[1])
-
-       
 
             result = [vul_name, status]
             remove_container()
