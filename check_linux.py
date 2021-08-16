@@ -284,7 +284,7 @@ def check_vul13() : #Check Vul 2-11
             etc = i.split(' ')[0][7:]
             if ('w' in etc) :
                 cnt_unsafe += 1
-    |
+    
     if cnt_unsafe == 0:
         return [title, 'Safe' ] 
     else :
