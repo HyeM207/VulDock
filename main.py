@@ -1,12 +1,9 @@
 from __future__ import print_function
 import json
-import argparse
 import os
-from posix import listdir
 import requests
 import commands
 from bs4 import BeautifulSoup
-import subprocess
 import re
 import getopt
 import sys
@@ -349,7 +346,7 @@ if __name__ == "__main__":
     optCheck = 0
 
     if len(args) != 1:
-        print('You Wrong')
+        print('Please Enter an Image name')
 
     else:
         image_name = args[0]
