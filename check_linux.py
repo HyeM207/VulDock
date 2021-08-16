@@ -204,6 +204,8 @@ def check_vul10() : #Check Vul 2-8
 
 def check_vul11() : #Check Vul 2-9
     title = 'Check for SUID, SGID settings for unnecessary or malicious files'
+    cnt_unsafe = 0 
+    cnt_safe = 0 
     no_exist=[]   
     SUID_list = []
     UID_list = []
