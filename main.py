@@ -10,10 +10,10 @@ import sys
 import string
 import random
 import print_table as table
-import CheckUbuntu as chenkU
+import check_linux as chenkU
 
 
-# def official_image()
+# Check Official Image
 def official_image(i_name):
     url = 'https://github.com/docker-library/official-images/tree/master/library/' + i_name
     response = requests.get(url)
@@ -24,11 +24,10 @@ def official_image(i_name):
     else:
         return False
 
-
+# Find Compose File by Image name
 def find_compose(image_name):
     cmd = commands.getoutput(
         'find / -name ' + image_name + ' 2> /dev/null').split('\n')
-    #print(cmd1)
 
     if cmd[0] == '':
         return False
@@ -41,7 +40,7 @@ def find_compose(image_name):
 
     return cmd[select - 1]
 
-
+# Find Service & Version in Image name
 def findVer_image(compose_path): 
     cmd = commands.getoutput('grep image ' + compose_path)
     images= cmd.replace('image: ', '').split('\n')
@@ -88,7 +87,7 @@ def findVer_image(compose_path):
                             
     return services    
 
-
+# Find Service & Version in Package.json
 def findVer_package(dir_path, compose_path):
     not_build = True
     
@@ -113,7 +112,6 @@ def findVer_package(dir_path, compose_path):
         if os.path.isfile(json_path+'/package.json')==True:
             file = open('package.json')
             jsonString = json.load(file)
-            #make dictionary
             services = dict()
             services_list=jsonString.get('dependencies').keys()
             for s in services_list :
@@ -134,7 +132,7 @@ def findVer_package(dir_path, compose_path):
     elif not_build == True:
         return False
 
-
+# Find Service & Version in env file
 def findVer_env(dir_path, compose_path):
     env_path = dir_path + '/.env'
 
@@ -146,7 +144,6 @@ def findVer_env(dir_path, compose_path):
 
     services = dict()
 
-    # find service name in compose file
     for c in cmd1:
         if c != '':
             service_line = int(c.split(':')[0]) - 1
@@ -154,16 +151,13 @@ def findVer_env(dir_path, compose_path):
                 'sed -n ' + str(service_line) + 'p ' + compose_path).read().split(':')[0].lstrip()
             services[service_name] = ''
 
-    # the dictionary of variables // {key : value} = {var_name : var_value}
     variables = dict()
 
-    # find variable in compose file
     for c, service in zip(cmd2, services) :
         if c != '':
             variables[c.split('$')[1]] = 'none'
             services[service] = c.split('$')[1]    
 
-    # get variable_value in .env
     cmd3 =  commands.getoutput('cat ' + env_path).split('\n')
     for c in cmd3:
         if c != '':
@@ -171,14 +165,13 @@ def findVer_env(dir_path, compose_path):
             var_value = c.split('=')[1]
             variables[var_name] = var_value
 
-    # put service_version into services list
     for service in services:
         val = services[service]
         services[service] = variables[val]
 
     return services
 
-
+# Find Service & Version in Dockerfile
 def findVer_dockerfile(dir_path, compose_path):
     cmd1 = commands.getoutput('grep -n build ' + compose_path).split('\n')
     
@@ -187,12 +180,10 @@ def findVer_dockerfile(dir_path, compose_path):
 
     services = dict()
 
-    # find service name in compose file
     for c in cmd1 :
         service_name = c.replace(' ', '').split(':')[2]
         dockerfile_path = dir_path + '/' +  service_name + 'Dockerfile'
 
-        # find detail services in Dockerfile 
         cmd2 = commands.getoutput('grep FROM ' + dockerfile_path).split('\n')
      
         if 'No such file' in cmd2[0] :
@@ -206,8 +197,8 @@ def findVer_dockerfile(dir_path, compose_path):
 
     return services
 
-
-def default_exploit(service): #only service name
+# Get Vulnerability by Service name without Version
+def default_exploit(service):
     title = []
     url = []
     url_list = []
@@ -219,8 +210,8 @@ def default_exploit(service): #only service name
     file = open(filename)
     jsonObject = json.load(file)
     result = jsonObject.get("RESULTS_EXPLOIT")
+
     for list in result:
-        #print(list.get("Title"))
         title.append(list.get("Title"))
         url.append(list.get("URL"))
 
@@ -237,42 +228,43 @@ def default_exploit(service): #only service name
                 title_list.append(i)
                 url_only = url[cnt-1]
                 url_list.append(url_only)
+
                 try :
                     response = requests.get(url_only, headers={"User-Agent": "Mozilla/5.0"})
+
                     if response.status_code == 200 :
                         html = response.text
                         soup = BeautifulSoup(html, 'html.parser')
-                        #print("connect")
                         target = soup.find_all('div', {'class':'col-6 text-center'})
+
                         try :
                             cve = target[1].find('a', {'target':'_blank'}).text.strip()
-                            #print("CVE : " + cve)
                             cve_list.append(cve)
+
                         except :
-                            #print("N/A")
                             cve_list.append("N/A")
                             
                 except Exception as ex:
                     print(ex)
         else :
-            
             if v.search(i) == None:
                 title_list.append(i)
                 url_only = url[cnt-1]
                 url_list.append(url_only)
+
                 try :
                     response = requests.get(url_only, headers={"User-Agent": "Mozilla/5.0"})
+
                     if response.status_code == 200 :
                         html = response.text
                         soup = BeautifulSoup(html, 'html.parser')
-                        #print("connect")
                         target = soup.find_all('div', {'class':'col-6 text-center'})
+
                         try :
                             cve = target[1].find('a', {'target':'_blank'}).text.strip()
-                            #print("CVE : " + cve)
                             cve_list.append(cve)
+
                         except :
-                            #print("N/A")
                             cve_list.append("N/A")
                             
                 except Exception as ex:
@@ -280,7 +272,7 @@ def default_exploit(service): #only service name
 
     return title_list, cve_list, url_list  
 
-
+# Get Vulnerability by Service name with Version
 def find_exploit(services):
 
     final_titles = []
@@ -303,28 +295,27 @@ def find_exploit(services):
         
         
         for list in result:
-            
             title = list.get("Title")
             url = list.get("URL")
-            
             match = ' ' + str(version)
                         
             if(title.split(' ')[0].lower() == service and match in title) :
                 titles.append(str(title))
                 url_list.append(str(url))
+
                 try :
                     response = requests.get(url, headers={"User-Agent": "Mozilla/5.0"})
+
                     if response.status_code == 200 :
                         html = response.text
                         soup = BeautifulSoup(html, 'html.parser')
-                        #print("connect")
                         target = soup.find_all('div', {'class':'col-6 text-center'})
+
                         try :
                             cve = target[1].find('a', {'target':'_blank'}).text.strip()
-                            #print("CVE : " + cve)
                             cve_list.append(cve)
+
                         except :
-                            #print("N/A")
                             cve_list.append("N/A")
                             
                 except Exception as ex:
@@ -344,6 +335,7 @@ def find_exploit(services):
 if __name__ == "__main__":
     opts, args = getopt.getopt(sys.argv[1:], 'haosnctl', ['options'])
     optCheck = 0
+
 
     if len(args) != 1:
         print('Please Enter an Image name')
@@ -385,6 +377,7 @@ if __name__ == "__main__":
         if ('-a', '') in opts:
             opts = [('-o', ''), ('-s', ''), ('-n', ''), ('-t', ''), ('-c', ''), ('-l', '')]
 
+        # Check Option
         for option, arg in opts:
             if '-o' == option:
                 print('\n\033[48;5;7m\033[38;5;0m [ Check Official Image ] \033[0m')
@@ -436,6 +429,7 @@ if __name__ == "__main__":
 
         if optCheck != 0:
             print('\n\033[48;5;7m\033[38;5;0m [ Vulnerabilities Chart ] \033[0m')
+
             for service_i in range(len(services)):
                 print(' > Service name : \033[38;5;178m%s\033[0m' %service_keys[service_i])
                 info_list = []
@@ -452,10 +446,10 @@ if __name__ == "__main__":
                 table.print_table(info_list)
                 print()
 
+        # Check Linux OS
         linux_os = ['debian', 'linux' ,'ubuntu','redhat', 'kali' ,'fedora', 'centos']
         for key, value in services.items() :
             for linux_name in linux_os:
                 if linux_name in key.lower():
-                    #print(key, value)
                     result = chenkU.main_func(key, value, linux_name)
                     table.print_table(result)        
