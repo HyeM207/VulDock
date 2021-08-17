@@ -52,43 +52,42 @@ def findVer_image(compose_path):
     
     services = dict()
 
+    if cmd=='':
+        return False
+
     for image in images:
-        if cmd=='':
-            return False
+        i_name = ''
+        i_ver = ''
+        image = image.replace(' ', '')
 
-        else:
-            i_name = ''
-            i_ver = ''
-            image = image.replace(' ', '')
+        if ':' in image :
+            i_name = image.split(':')[0]
+            i_ver = image.split(':')[1]
+            services[i_name] = i_ver
 
-            if ':' in image :
-                i_name = image.split(':')[0]
-                i_ver = image.split(':')[1]
-                services[i_name] = i_ver
-
-            if i_ver == 'latest' or ':' not in image:
-                i_name = image
-                i_ver = 'latest'
+        if i_ver == 'latest' or ':' not in image:
+            i_name = image
+            i_ver = 'latest'
                     
-                url = 'https://github.com/docker-library/official-images/tree/master/library/' + i_name
-                response = requests.get(url)
+            url = 'https://github.com/docker-library/official-images/tree/master/library/' + i_name
+            response = requests.get(url)
 
-                if response.status_code == 200 :
-                    html = response.text
-                    soup = BeautifulSoup(html, 'html.parser')
-                    target = soup.find('table', {'class':'highlight tab-size js-file-line-container'}).get_text().split('\n')
-                    tags = []
+            if response.status_code == 200 :
+                html = response.text
+                soup = BeautifulSoup(html, 'html.parser')
+                target = soup.find('table', {'class':'highlight tab-size js-file-line-container'}).get_text().split('\n')
+                tags = []
 
-                    for line in target:
-                        if i_ver in line :
-                            line = str(line)
-                            tags = line.replace('Tags:', '')
-                            tags = tags.replace(' ', '')
-                            tags = tags.split(',')
-                            tags.remove('latest')
-                            i_ver = tags[0]
-                            services[i_name] = i_ver
-                            break
+                for line in target:
+                    if i_ver in line :
+                        line = str(line)
+                        tags = line.replace('Tags:', '')
+                        tags = tags.replace(' ', '')
+                        tags = tags.split(',')
+                        tags.remove('latest')
+                        i_ver = tags[0]
+                        services[i_name] = i_ver
+                        break
                             
     return services    
 
