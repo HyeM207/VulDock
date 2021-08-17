@@ -495,6 +495,7 @@ if __name__ == "__main__":
 
         # Check Linux OS
         linux_os = ['debian', 'linux' ,'ubuntu','redhat', 'kali' ,'fedora', 'centos']
+        print('\n\033[48;5;7m\033[38;5;0m [ Linux OS Vulnerabilities Chart ] \033[0m')
         for key, value in services.items() :
             for linux_name in linux_os:
                 if linux_name in key.lower():
