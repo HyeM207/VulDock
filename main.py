@@ -32,13 +32,18 @@ def find_compose(image_name):
     if cmd[0] == '':
         return False
 
-    for i in range(len(cmd)):
-        num = i + 1
-        print('%d. %s' %(num, cmd[i]))
+    while True:
+        for i in range(len(cmd)):
+            num = i + 1
+            print('%d. %s' %(num, cmd[i]))
 
-    select = int(input('Enter number of your path : '))
+        select = int(input('Enter number of your path : '))
 
-    return cmd[select - 1]
+        if select > (len(cmd) + 1) or select <= 0:
+            print('You Choose Wrong Number. Try again.\n')
+            continue
+
+        return cmd[select - 1]
 
 # Find Service & Version in Image name
 def findVer_image(compose_path): 
@@ -338,7 +343,7 @@ if __name__ == "__main__":
 
 
     if len(args) != 1:
-        print('Please Enter an Image name')
+        print('\033[38;5;160m[ ERROR ]\033[0m Please Enter an Image name')
 
     else:
         image_name = args[0]
@@ -347,26 +352,48 @@ if __name__ == "__main__":
         
         
         dir_path = find_compose(image_name)
+        if dir_path == False:
+            print('\n\033[38;5;160m[ ERROR ]\033[0m Your Image is not a Type that Fits our Tool')
+            sys.exit()
+            
+
         compose_path = commands.getoutput('find ' + dir_path + ' -name docker-compose.y*') 
 
         services = dict()
+        check_none_service = 0
+        
         image_service = findVer_image(compose_path)
         if image_service != False:
             services.update(image_service)
+
+        else:
+            check_none_service += 1
 
         package_service = findVer_package(dir_path, compose_path)
         if package_service != False:
             services.update(package_service)
         
+        else:
+            check_none_service += 1
+
         env_service = findVer_env(dir_path, compose_path)
         if env_service != False:
             services.update(env_service)
 
+        else:
+            check_none_service += 1
+
         dockerfile_service = findVer_dockerfile(dir_path, compose_path)
         if dockerfile_service != False:
             services.update(dockerfile_service)
-
         
+        else:
+            check_none_service += 1
+        
+        if check_none_service == 4:
+            print("\n\033[38;5;160m[ ERROR ]\033[0m You don't have any Service in Your Image")
+            sys.exit()
+
         service_keys = services.keys()
         title_list = ['Title']
         cve_list = ['CVE']
@@ -381,14 +408,34 @@ if __name__ == "__main__":
         for option, arg in opts:
             if '-o' == option:
                 print('\n\033[48;5;7m\033[38;5;0m [ Check Official Image ] \033[0m')
-                for service in image_service:
-                    official = official_image(service)
-                    
-                    if official:
-                        print(' > \033[38;5;178m%s\033[0m : Official Image' %service)
-                    
-                    else:
-                        print(' > \033[38;5;178m%s\033[0m : Unofficial Image' %service)
+                if image_service != False:
+                    for service in image_service:
+                        official = official_image(service)
+                        
+                        if official:
+                            print(' > \033[38;5;178m%s\033[0m : Official Image' %service)
+                        
+                        else:
+                            print(' > \033[38;5;178m%s\033[0m : Unofficial Image' %service)
+
+                if package_service != False:
+                    for service in package_service:
+                        print(' > \033[38;5;178m%s\033[0m : Not Image' %service)
+
+                if env_service != False:    
+                    for service in env_service:
+                        print(' > \033[38;5;178m%s\033[0m : Not Image' %service)
+                
+                if dockerfile_service != False:
+                    for service in dockerfile_service:
+                        official = official_image(service)
+                        
+                        if official:
+                            print(' > \033[38;5;178m%s\033[0m : Official Image' %service)
+                        
+                        else:
+                            print(' > \033[38;5;178m%s\033[0m : Unofficial Image' %service)
+
             
             elif '-s' == option:
                 print('\n\033[48;5;7m\033[38;5;0m [ Service Version ] \033[0m')
