@@ -351,12 +351,11 @@ if __name__ == "__main__":
         
         
         dir_path = find_compose(image_name)
-        if dir_path == False:
+        compose_path = commands.getoutput('find ' + dir_path + ' -name docker-compose.y*') 
+
+        if compose_path == '':
             print('\n\033[38;5;160m[ ERROR ]\033[0m Your Image is not a Type that Fits our Tool')
             sys.exit()
-            
-
-        compose_path = commands.getoutput('find ' + dir_path + ' -name docker-compose.y*') 
 
         services = dict()
         check_none_service = 0
