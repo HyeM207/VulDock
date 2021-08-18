@@ -337,14 +337,41 @@ def find_exploit(services):
 
 
 if __name__ == "__main__":
-    opts, args = getopt.getopt(sys.argv[1:], 'haosnctl', ['options'])
+    try:
+        opts, args = getopt.getopt(sys.argv[1:], 'haosnctl', ['options'])
+    except getopt.GetoptError as err:
+        print(err)
+        print('Usage : VulDock [OPTIONS] Image_name')
+        print("Try 'VulDock -h' for more information")
+
     optCheck = 0
 
     if len(args) != 1 and ('-h', '') not in opts:
         print('\033[38;5;160m[ ERROR ]\033[0m Please Enter an Image name')
         print("'VulDock' requires exactly 1 argument.")
-        print("See 'VulDock -h")
+        print("See 'VulDock -h'")
         print('\nUsage : VulDock [OPTIONS] Image_name')
+
+    elif ('-h', '') in opts:
+        print("""USAGE :
+                    VulDock [OPTION] [FILE]
+
+                DESCRIPTION :
+                      -a
+                    show all options
+                      -t
+                    print CVE Title
+                      -c
+                    print CVE number
+                      -l
+                    print cve url
+                      -s
+                    print services list
+                      -n
+                    print the number of vulnerabilities
+                      -o
+                    print whether image is official or not""")
+        sys.exit()
 
     else:
         image_name = args[0]
@@ -406,28 +433,7 @@ if __name__ == "__main__":
 
         # Check Option
         for option, arg in opts:
-            if '-h' == option:
-                print("""USAGE :
-                        VulDock [OPTION] [FILE]
-
-                        DESCRIPTION :
-                          -a
-                        show all options
-                          -t
-                        print CVE Title
-                          -c
-                        print CVE number
-                          -l
-                        print cve url
-                          -s
-                        print services list
-                          -n
-                        print the number of vulnerabilities
-                          -o
-                        print whether image is official or not""")
-                break
-
-            elif '-o' == option:
+            if '-o' == option:
                 print('\n\033[48;5;7m\033[38;5;0m [ Check Official Image ] \033[0m')
                 if image_service != False:
                     for service in image_service:
@@ -493,12 +499,6 @@ if __name__ == "__main__":
                 elif '-l' == option:
                     chart_list.append(url_list)
                     optCheck += 1
-            
-            else:
-                print('Unkown opation : %s' %option)
-                print('Usage : VulDock [OPTIONS] Image_name')
-                print("Try 'VulDock -h' for more information")
-
 
         if optCheck != 0:
             print('\n\033[48;5;7m\033[38;5;0m [ Vulnerabilities Chart ] \033[0m')
