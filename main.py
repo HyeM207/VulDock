@@ -343,6 +343,7 @@ if __name__ == "__main__":
         print(err)
         print('Usage : VulDock [OPTIONS] Image_name')
         print("Try 'VulDock -h' for more information")
+        sys.exit()
 
     optCheck = 0
 
@@ -351,6 +352,7 @@ if __name__ == "__main__":
         print("'VulDock' requires exactly 1 argument.")
         print("See 'VulDock -h'")
         print('\nUsage : VulDock [OPTIONS] Image_name')
+        sys.exit()
 
     elif ('-h', '') in opts:
         print("""USAGE :
