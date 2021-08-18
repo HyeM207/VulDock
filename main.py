@@ -355,24 +355,23 @@ if __name__ == "__main__":
         sys.exit()
 
     elif ('-h', '') in opts:
-        print("""USAGE :
-                    VulDock [OPTION] [FILE]
+        print("""USAGE : VulDock [OPTION] [FILE] \n" +
 
-                DESCRIPTION :
-                      -a
-                    show all options
-                      -t
-                    print CVE Title
-                      -c
-                    print CVE number
-                      -l
-                    print cve url
-                      -s
-                    print services list
-                      -n
-                    print the number of vulnerabilities
-                      -o
-                    print whether image is official or not""")
+                "DESCRIPTION :\n" +
+                "      -a\n"
+                "    show all options\n"
+                "      -t\n"
+                "    print CVE Title\n"
+                "      -c\n"
+                "    print CVE number\n"
+                "      -l\n"
+                "    print cve url\n"
+                "      -s\n"
+                "    print services list\n"
+                "      -n\n"
+                "    print the number of vulnerabilities\n"
+                "      -o\n"
+                "    print whether image is official or not\n""")
         sys.exit()
 
     else:
